@@ -14,9 +14,11 @@ const {
     modificarInscripcionAlumno,
     pasarDeAnioAlumno } = require('../controllers/alumnoController');
 
+
+
 const router = express.Router();
 
-router.get('/', obtenerAlumnos);
+router.get('/',obtenerAlumnos);
 router.get('/alumno/ver/:id', obtenerAlumnoPorId);
 router.get('/primero', obtenerAlumnosPrimero);
 router.get('/segundo', obtenerAlumnosSegundo);

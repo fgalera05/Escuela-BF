@@ -16,7 +16,7 @@ async function crearAlumno(alumno) {
     if (existeAlumno) {
       logger.error(`El dni ya existe`);
     }
-    console.log(alumno.genero);
+    // console.log(alumno.genero);
     const existeGenero = await Genero.findById(alumno.genero)
     if (!existeGenero) {
       logger.error(`El género no existe`);

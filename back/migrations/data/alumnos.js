@@ -79,7 +79,7 @@ const alumno5 = {
     //: mongoose.Types.ObjectId('000000000000000000000118')
 }
 const alumno6 = {
-    _id: mongoose.Types.ObjectId("111111111111111111111111"),
+    _id: mongoose.Types.ObjectId("000000000000000000000274"),
     alumno:{
         apellido: "Perez",
     nombre: "Ratont",

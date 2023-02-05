@@ -7,7 +7,7 @@ const customFormat = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.simple(),
   winston.format.printf((info) => {
-    return `[${info.level.toUpperCase().padEnd(5)}]: ${info.timestamp} -- ${info.message}`
+    return `[${info.level.toUpperCase().padEnd(7)}]: ${info.timestamp} -- ${info.message}`
   })
 );
 //

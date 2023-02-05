@@ -341,7 +341,7 @@ async function modificarInscripcionAlumno(req, res, next) {
         const alumnoToUpdate = await Alumno.findById(alumno.alumnoID).populate('curso').populate('anio')
         if (!alumnoToUpdate) {
             logger.debug('Alumno not found')
-            res.status(404).send('Alumno not found')
+            return res.status(404).send('Alumno not found')
         }
 
         const existeAnio = await Anio.findById(alumno.anio).populate('especialidad')
@@ -488,7 +488,7 @@ async function pasarDeAnioAlumno(req, res, next) {
         }
         if (alumno.anio.anio === 6 && alumno.sexto) {
             pasaDeAnio = true
-          }
+        }
 
         if(!pasaDeAnio){
             logger.debug('El alumno no puede pasar de año');

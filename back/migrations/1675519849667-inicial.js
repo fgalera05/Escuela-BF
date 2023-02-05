@@ -20,6 +20,12 @@ const Alumno = require('../schemas/alumnoSchema')
 const {alumno1, alumno2, alumno3, alumno3b,alumno4,alumno5,alumno6} = require('./data/alumnos')
 const {crearAlumno} = require('./funciones')
 
+const Rol = require('../schemas/rolSchema')
+const {roles} = require('./data/roles')
+
+const Usuario = require('../schemas/usuarioSchema')
+const {usuarios} = require('./data/usuarios')
+
 async function up () {
   conDb();
   await Especialidad.collection.insertMany(especialidades)
@@ -34,6 +40,8 @@ async function up () {
   await crearAlumno(alumno4)
   await crearAlumno(alumno5)
   await crearAlumno(alumno6)
+  await Rol.collection.insertMany(roles)
+  await Usuario.collection.insertMany(usuarios)
 }
 
 async function down () {
@@ -44,6 +52,8 @@ async function down () {
   await mongoose.model('Curso').deleteMany()
   await mongoose.model('Genero').deleteMany()
   await mongoose.model('Alumno').deleteMany()
+  await mongoose.model('Rol').deleteMany()
+  await mongoose.model('Usuario').deleteMany()
 }
 
 module.exports = { up, down };
