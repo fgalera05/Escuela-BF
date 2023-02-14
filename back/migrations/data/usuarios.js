@@ -7,7 +7,7 @@ const hash = bcrypt.hashSync(pass, salt);
 // console.log(hash);
 
 const usuarioAdmin =[ {
-    usuario: 'fergalera',
+    usuario: 'admin',
       password: hash,
       datos: {
         nombre: 'Fer',

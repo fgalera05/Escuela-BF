@@ -8,7 +8,7 @@ const alumno1 = {
     },
 
     dni: 101,
-    genero: mongoose.Types.ObjectId('000000000000000000000005'),
+    genero: mongoose.Types.ObjectId('000000000000000000000003'),
     especialidad: mongoose.Types.ObjectId('000000000000000000000000'),
     curso: mongoose.Types.ObjectId('000000000000000000000121'),
     //: mongoose.Types.ObjectId('000000000000000000000118'),

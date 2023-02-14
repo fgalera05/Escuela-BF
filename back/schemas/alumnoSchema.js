@@ -1,16 +1,17 @@
-const mongoose = require('mongoose')
-const validate = require('mongoose-validator')
-const Schema = mongoose.Schema
-const { ObjectId } = Schema.Types
-const emailValidator = validate({ validator: 'isEmail' })
-const uniqueValidator = require('mongoose-unique-validator')
+const mongoose = require("mongoose");
+const validate = require("mongoose-validator");
+const Schema = mongoose.Schema;
+const { ObjectId } = Schema.Types;
+const emailValidator = validate({ validator: "isEmail" });
+const uniqueValidator = require("mongoose-unique-validator");
 
-const alumnoSchema = new Schema({
-  alumno: {
-    nombre: { type: String, required: true },
-    apellido: { type: String, required: true },
-  },
-  genero: { type: ObjectId, ref: 'Genero', required: true },
+const alumnoSchema = new Schema(
+  {
+    alumno: {
+      nombre: { type: String, required: true },
+      apellido: { type: String, required: true },
+    },
+    genero: { type: ObjectId, ref: "Genero", required: true },
     email: {
       type: String,
       // required: true,
@@ -22,7 +23,7 @@ const alumnoSchema = new Schema({
     dni: {
       type: Number,
       required: true,
-      // unique: true
+      unique: true
     },
     direccion: {
       type: String,
@@ -32,24 +33,24 @@ const alumnoSchema = new Schema({
     telefono: {
       type: String,
     },
-  fechaInscripcion: { type: Date },
-  especialidad: { type: ObjectId, ref: 'Especialidad', required: true },
-  anio: { type: ObjectId, ref: 'Anio', required: true },
-  curso: { type: ObjectId, ref: 'Curso', required: true },
-  primero: { type: Boolean, default: false },
-  segundo: { type: Boolean, default: false },
-  tercero: { type: Boolean, default: false },
-  cuarto: { type: Boolean, default: false },
-  quinto: { type: Boolean, default: false },
-  sexto: { type: Boolean, default: false },
-  previas: { type: Number, default: 0 },
-  regular: { type: Boolean, default: true }
-},
+    fechaInscripcion: { type: Date },
+    especialidad: { type: ObjectId, ref: "Especialidad", required: true },
+    anio: { type: ObjectId, ref: "Anio", required: true },
+    curso: { type: ObjectId, ref: "Curso", required: true },
+    primero: { type: Boolean, default: false },
+    segundo: { type: Boolean, default: false },
+    tercero: { type: Boolean, default: false },
+    cuarto: { type: Boolean, default: false },
+    quinto: { type: Boolean, default: false },
+    sexto: { type: Boolean, default: false },
+    previas: { type: Number, default: 0 },
+    regular: { type: Boolean, default: true },
+  },
   {
-    timestamps: true
+    timestamps: true,
   }
-)
+);
 alumnoSchema.plugin(uniqueValidator); //valida que el campo sea único
 
-const Alumno = mongoose.model('Alumno', alumnoSchema)
-module.exports = Alumno
+const Alumno = mongoose.model("Alumno", alumnoSchema);
+module.exports = Alumno;

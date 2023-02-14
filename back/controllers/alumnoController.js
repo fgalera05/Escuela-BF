@@ -9,7 +9,7 @@ const logger = require('../logger');
 
 async function obtenerAlumnos(req, res, next) {
     try {
-        const alumnos = await Alumno.find().populate('genero').populate('curso').populate('anio')
+        const alumnos = await Alumno.find().populate('genero').populate('curso').populate('anio').populate('especialidad')
         res.status(200).json(alumnos)
     } catch (err) {
         logger.debug(err)
@@ -199,6 +199,11 @@ async function crearAlumno(req, res, next) {
             return res.status(404).json('El año no existe')
         }
 
+        if (existeAnio.anio !==existeCurso.anio.anio){
+            logger.error('El curso es de otro año ')
+            return res.status(500).json('El curso es de otro año')
+        }
+
         let alumnoPrimero = false;
         let alumnoSegundo = false;
         let alumnoTercero = false;
@@ -282,7 +287,7 @@ async function crearAlumno(req, res, next) {
 
 async function modificarAlumno(req, res, next) {
     console.log('modificarAlumno with id: ', req.params.id)
-
+    console.log('Nombre:',req.body.nombre)
     const alumno = {
         alumnoID: req.params.id,
         nombre: req.body.nombre,
@@ -296,7 +301,7 @@ async function modificarAlumno(req, res, next) {
     }
 
     try {
-        const alumnoToUpdate = await Alumno.findById(alumno.alumnoID).populate('curso').populate('anio')
+        const alumnoToUpdate = await Alumno.findById(alumno.alumnoID).populate('curso').populate('anio').populate('especialidad')
         console.log('alumno a actualizar', alumno);
         if (!alumnoToUpdate) {
             logger.debug('Alumno not found')
@@ -309,8 +314,8 @@ async function modificarAlumno(req, res, next) {
             return res.status(404).json('El género no existe')
         }
 
-        alumnoToUpdate.nombre = alumno.nombre;
-        alumnoToUpdate.apellido = alumno.apellido;
+        alumnoToUpdate.alumno.nombre = alumno.nombre;
+        alumnoToUpdate.alumno.apellido = alumno.apellido;
         alumnoToUpdate.dni = alumno.dni;
         alumnoToUpdate.email = alumno.email;
         alumnoToUpdate.direccion = alumno.direccion;
@@ -318,7 +323,7 @@ async function modificarAlumno(req, res, next) {
         alumnoToUpdate.telefono = alumno.telefono;
         alumnoToUpdate.genero = existeGenero;
         await alumnoToUpdate.save({ runValidators: true, context: 'query' }) //valida que el campo sea único
-
+        console.log('alumnoToUpdate:',alumnoToUpdate)
         return res.status(200).json(alumnoToUpdate);
     } catch (err) {
         next(err)

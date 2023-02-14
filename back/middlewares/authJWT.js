@@ -19,6 +19,7 @@ async function authJWT(req, res, next) {
     }
 
     if (!token) {
+        console.log(token);
         logger.error('Token no enviado!')
         return res.status(400).json('Token no enviado!')
     }
