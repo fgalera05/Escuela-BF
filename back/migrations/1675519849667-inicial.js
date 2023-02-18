@@ -54,6 +54,7 @@ async function down () {
   await mongoose.model('Alumno').deleteMany()
   await mongoose.model('Rol').deleteMany()
   await mongoose.model('Usuario').deleteMany()
+  await mongoose.model('Calificacion').deleteMany()
 }
 
 module.exports = { up, down };

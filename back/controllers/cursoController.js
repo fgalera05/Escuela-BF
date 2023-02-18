@@ -14,6 +14,14 @@ async function obtenerCursos(req, res, next) {
           }
         }
       )
+      .populate(
+        {
+          path: 'anio',
+          populate: {
+            path: 'especialidad',
+          }
+        }
+      )
 
     return res.status(200).json(cursos);
   } catch (err) {
@@ -50,7 +58,7 @@ async function obtenerAlumnosCursos(req, res, next) {
     for (i = 0; i < alumnos.length; i++) {
 
       let pasaDeAnio = false;
-      const calificaciones = await Calificacion.find({ alumno: alumnos[i].id, curso: cursoData.id })
+      const calificaciones = await Calificacion.find({ alumno: alumnos[i].id, curso: cursoData.id }).populate('materia')
  
       if (cursoData.anio.anio === 1 && alumnos[i].primero) {
         pasaDeAnio = true

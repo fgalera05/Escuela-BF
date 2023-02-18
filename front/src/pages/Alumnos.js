@@ -35,11 +35,13 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { format } from 'date-fns'
+import { format } from "date-fns";
 import { useForm } from "react-hook-form";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 function BasicDatePicker(props) {
-  const [value, setValue]= React.useState(props.fecha);
+  const [value, setValue] = React.useState(props.fecha);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -47,8 +49,8 @@ function BasicDatePicker(props) {
         label="Fecha de nacimiento"
         value={value}
         onChange={(newValue) => {
-            setValue(newValue)
-            props.setFechaDeNacimiento(newValue.$d);
+          setValue(newValue);
+          props.setFechaDeNacimiento(newValue.$d);
         }}
         renderInput={(params) => <TextField {...params} />}
         inputFormat="DD/MM/YYYY"
@@ -57,20 +59,26 @@ function BasicDatePicker(props) {
   );
 }
 
-function MiDialog({thisAlumno, thisGeneros, onModificar}) {
-  const { register, formState: { errors }, handleSubmit, required } = useForm();
+function MiDialog({ thisAlumno, thisGeneros, onModificar }) {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    required,
+  } = useForm();
   const [open, setOpen] = React.useState(false);
   const alumno = thisAlumno;
-  
+
   const [generos, setGeneros] = React.useState(thisGeneros);
-  
 
   const [apellido, setApellido] = React.useState(thisAlumno.alumno.apellido);
   const [nombre, setNombre] = React.useState(thisAlumno.alumno.nombre);
   const [direccion, setDireccion] = React.useState(thisAlumno.alumno.direccion);
   const [email, setEmail] = React.useState(thisAlumno.alumno.email);
   const [telefono, setTelefono] = React.useState(thisAlumno.alumno.telefono);
-  const [fechaDeNacimiento, setFechaDeNacimiento] = React.useState(thisAlumno.fechaDeNacimiento);
+  const [fechaDeNacimiento, setFechaDeNacimiento] = React.useState(
+    thisAlumno.fechaDeNacimiento
+  );
   const [genero, setGenero] = React.useState(thisAlumno.genero);
   const [dni, setDni] = React.useState(thisAlumno.dni);
 
@@ -84,7 +92,17 @@ function MiDialog({thisAlumno, thisGeneros, onModificar}) {
 
   const handleClickGuardar = (data) => {
     console.log(data);
-    onModificar(alumno._id, apellido, nombre, genero, dni, data.email, fechaDeNacimiento, telefono, direccion);
+    onModificar(
+      alumno._id,
+      apellido,
+      nombre,
+      genero,
+      dni,
+      data.email,
+      fechaDeNacimiento,
+      telefono,
+      direccion
+    );
 
     console.log(fechaDeNacimiento);
     setOpen(false);
@@ -122,7 +140,7 @@ function MiDialog({thisAlumno, thisGeneros, onModificar}) {
         <DialogTitle></DialogTitle>
         <DialogContent>
           <DialogContentText>Editar alumno</DialogContentText>
-         
+
           <Box
             component="form"
             sx={{
@@ -137,18 +155,18 @@ function MiDialog({thisAlumno, thisGeneros, onModificar}) {
                 id="apellido"
                 label="Apellidos"
                 defaultValue={apellido}
-                  onChange={(e) => {
-                    setApellido(e.target.value);
-                  }}
+                onChange={(e) => {
+                  setApellido(e.target.value);
+                }}
               />
               <TextField
                 required
                 id="nombre"
                 label="Nombres"
                 defaultValue={nombre}
-                  onChange={(e) => {
-                    setNombre(e.target.value);
-                  }}
+                onChange={(e) => {
+                  setNombre(e.target.value);
+                }}
               />
             </div>
             <div>
@@ -176,9 +194,9 @@ function MiDialog({thisAlumno, thisGeneros, onModificar}) {
                 id="dni"
                 label="DNI"
                 defaultValue={dni}
-                  onChange={(e) => {
-                    setDni(e.target.value);
-                  }}
+                onChange={(e) => {
+                  setDni(e.target.value);
+                }}
               />
             </div>
             <div>
@@ -188,8 +206,8 @@ function MiDialog({thisAlumno, thisGeneros, onModificar}) {
                 label="Dirección"
                 defaultValue={alumno.direccion}
                 onChange={(e) => {
-                    setDireccion(e.target.value);
-                  }}
+                  setDireccion(e.target.value);
+                }}
               />
               <TextField
                 required
@@ -197,29 +215,33 @@ function MiDialog({thisAlumno, thisGeneros, onModificar}) {
                 label="email"
                 defaultValue={alumno.email}
                 onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                  {...register("email", { required: "Email Address is required" })} 
-        aria-invalid={errors.email ? "true" : "false"} 
-      />
-      {errors.email && <p role="alert">{errors.email?.message}</p>}
+                  setEmail(e.target.value);
+                }}
+                {...register("email", {
+                  required: "Email Address is required",
+                })}
+                aria-invalid={errors.email ? "true" : "false"}
+              />
+              {errors.email && <p role="alert">{errors.email?.message}</p>}
               <TextField
                 required
                 id="telefono"
                 label="Teléfono"
                 defaultValue={alumno.telefono}
                 onChange={(e) => {
-                    setTelefono(e.target.value);
-                  }}
+                  setTelefono(e.target.value);
+                }}
               />
-              <BasicDatePicker fecha={alumno.fechaDeNacimiento} setFechaDeNacimiento={setFechaDeNacimiento}/>
+              <BasicDatePicker
+                fecha={alumno.fechaDeNacimiento}
+                setFechaDeNacimiento={setFechaDeNacimiento}
+              />
               <TextField
                 disabled
                 id="anio"
                 label="Año"
                 defaultValue={alumno.anio.anio}
                 variant="standard"
-               
               />
               <TextField
                 disabled
@@ -234,13 +256,12 @@ function MiDialog({thisAlumno, thisGeneros, onModificar}) {
                 label="curso"
                 defaultValue={alumno.curso.nombre}
                 variant="standard"
-                
               />
             </div>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="error"  onClick={handleClose}>
+          <Button variant="contained" color="error" onClick={handleClose}>
             Cancelar
           </Button>
           <Button
@@ -252,7 +273,6 @@ function MiDialog({thisAlumno, thisGeneros, onModificar}) {
           </Button>
         </DialogActions>
       </Dialog>
-
     </>
   );
 }
@@ -263,21 +283,37 @@ function Alumnos() {
   const [alumnos, setAlumnos] = useState([]);
   const [generos, setGeneros] = useState([]);
 
-  const onModificar = async (id, apellido, nombre, genero, dni, email, fechaDeNacimiento, telefono, direccion) => {
+  const [copyList, setCopyList] = useState(alumnos);
+
+  const requestSearch = (searched) => {
+    setCopyList(alumnos.filter((a) => a._id.includes(searched)));
+  };
+
+  const onModificar = async (
+    id,
+    apellido,
+    nombre,
+    genero,
+    dni,
+    email,
+    fechaDeNacimiento,
+    telefono,
+    direccion
+  ) => {
     try {
-      console.log("Received values of form: ", id,nombre,fechaDeNacimiento);
-      
+      console.log("Received values of form: ", id, nombre, fechaDeNacimiento);
+
       const newUser = await axios.patch(
         "http://localhost:8000/alumnos/modificar/" + id,
         {
-            apellido: apellido.charAt(0).toUpperCase() + apellido.slice(1),
-            nombre: nombre.charAt(0).toUpperCase() + nombre.slice(1),
-            genero: genero,
-            dni: dni,
-            direccion: direccion,
-            telefono: telefono,
-            email:email,
-            fechaDeNacimiento: fechaDeNacimiento,
+          apellido: apellido.charAt(0).toUpperCase() + apellido.slice(1),
+          nombre: nombre.charAt(0).toUpperCase() + nombre.slice(1),
+          genero: genero,
+          dni: dni,
+          direccion: direccion,
+          telefono: telefono,
+          email: email,
+          fechaDeNacimiento: fechaDeNacimiento,
         },
         {
           headers: {
@@ -285,10 +321,10 @@ function Alumnos() {
           },
         }
       );
-      const alumnosOld = alumnos.filter(element =>
-        (element._id !== newUser.data._id)
-      )
-      setAlumnos([newUser.data,...alumnosOld, ]);
+      const alumnosOld = alumnos.filter(
+        (element) => element._id !== newUser.data._id
+      );
+      setAlumnos([newUser.data, ...alumnosOld]);
     } catch (err) {
       console.log(err);
     }
@@ -335,21 +371,21 @@ function Alumnos() {
       <NavBar />
       <CardHeader />
       <Container>
-        <Typography variant="h5" component="div">
-          Buscar alumnos
-        </Typography>
+        <TextField
+          sx={{ width: 1 / 2 }}
+          variant="outlined"
+          placeholder="Buscar alumno..."
+          type="search"
+          onChange={(e) => requestSearch(e.target.value)}
+        />
         <CardHeader />
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell>Legajo</TableCell>
-                <TableCell >Apellido y nombre</TableCell>
+                <TableCell>Apellido y nombre</TableCell>
                 <TableCell align="right">DNI</TableCell>
-                <TableCell align="center">Género</TableCell>
-                <TableCell align="right">Dirección</TableCell>
-                <TableCell align="right">Teléfono</TableCell>
-                <TableCell align="center">Email</TableCell>
                 <TableCell align="right">Año</TableCell>
                 <TableCell align="right">Especialidad</TableCell>
                 <TableCell align="right">Curso</TableCell>
@@ -357,37 +393,35 @@ function Alumnos() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {alumnos.map((alumno) => (
-                <TableRow
-                  key={alumno._id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell align="left">{parseInt(alumno._id)}</TableCell>
-                  <TableCell component="th" scope="alumno">
-                    {alumno.alumno.apellido}, {alumno.alumno.nombre}
-                  </TableCell>
-                  <TableCell align="right">{alumno.dni}</TableCell>
-                  <TableCell align="right">{alumno.genero.genero}</TableCell>
-                  <TableCell align="right">{alumno.direccion}</TableCell>
-                  <TableCell align="right">{alumno.telefono}</TableCell>
-                  <TableCell align="right">{alumno.email}</TableCell>
-                  <TableCell align="right">{alumno.anio.anio}</TableCell>
-                  <TableCell align="right">
-                    {alumno.especialidad.especialidad}
-                  </TableCell>
-                  <TableCell align="right">{alumno.curso.nombre}</TableCell>
-                  <TableCell align="right">
-                    {alumno.previas == "0" ? "-" : alumno.previas}
-                  </TableCell>
-                  <TableCell align="right">
-                    <MiDialog
-                      thisAlumno={alumno}
-                      thisGeneros={generos}
-                      onModificar={onModificar}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {(copyList.length > 0 ? copyList : alumnos)
+                .sort((a, b) => (a.anio.anio > b.anio.anio ? 1 : -1))
+                .map((alumno) => (
+                  <TableRow
+                    key={alumno._id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell align="left">{parseInt(alumno._id)}</TableCell>
+                    <TableCell component="th" scope="alumno">
+                      {alumno.alumno.apellido}, {alumno.alumno.nombre}
+                    </TableCell>
+                    <TableCell align="right">{alumno.dni}</TableCell>
+                    <TableCell align="right">{alumno.anio.anio}</TableCell>
+                    <TableCell align="right">
+                      {alumno.especialidad.especialidad}
+                    </TableCell>
+                    <TableCell align="right">{alumno.curso.nombre}</TableCell>
+                    <TableCell align="right">
+                      {alumno.previas == "0" ? "-" : alumno.previas}
+                    </TableCell>
+                    <TableCell align="right">
+                      <MiDialog
+                        thisAlumno={alumno}
+                        thisGeneros={generos}
+                        onModificar={onModificar}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>

@@ -138,12 +138,12 @@ async function crearAlumno(req, res, next) {
         fechaDeNacimiento: req.body.fechaDeNacimiento,
         genero: req.body.genero,
         telefono: req.body.telefono,
-        especialidad: req.body.especialidad,
+        // especialidad: req.body.especialidad,
         anio: req.body.anio,
         curso: req.body.curso,
         previas: (req.body.previas ? req.body.previas : 0),
     }
-    // console.log(alumno);
+    console.log('NUEVO ALUMNO:', alumno);
     try {
         const existeAlumno = await Alumno.findOne({ dni: alumno.dni })
 
@@ -152,12 +152,12 @@ async function crearAlumno(req, res, next) {
             return res.status(400).json('El dni ya existe')
         }
 
-        const existeEspecialidad = await Especialidad.findById(alumno.especialidad)
+        // const existeEspecialidad = await Especialidad.findById(alumno.especialidad)
 
-        if (!existeEspecialidad) {
-            logger.debug(`La especialidad no existe`)
-            return res.status(404).json('La especialidad no existe')
-        }
+        // if (!existeEspecialidad) {
+        //     logger.debug(`La especialidad no existe`)
+        //     return res.status(404).json('La especialidad no existe')
+        // }
 
 
         const existeGenero = await Genero.findById(alumno.genero)
@@ -245,11 +245,12 @@ async function crearAlumno(req, res, next) {
                 email: alumno.email,
                 telefono: alumno.telefono,
                 dni: alumno.dni,
+                direccion: alumno.direccion,
                 genero: existeGenero,
                 curso: existeCurso,
                 fechaInscripcion: new Date(),
                 anio: existeAnio,
-                especialidad: existeEspecialidad,
+                especialidad: existeCurso.anio.especialidad,
                 primero: alumnoPrimero,
                 segundo: alumnoSegundo,
                 tercero: alumnoTercero,
@@ -295,6 +296,7 @@ async function modificarAlumno(req, res, next) {
         dni: req.body.dni,
         genero: req.body.genero,
         direccion: req.body.direccion,
+        telefono: req.body.telefono,
         email: req.body.email,
         fechaDeNacimiento: req.body.fechaDeNacimiento,
         telefono: req.body.telefono,
@@ -558,6 +560,27 @@ async function pasarDeAnioAlumno(req, res, next) {
     }
 }
 
+async function nuevoAlumno(req, res, next) {
+    try {
+      const generos = await Genero.find()
+      const especialidades = await Especialidad.find()
+      const anios = await Anio.find().populate('especialidad')
+      const cursos = await Curso.find().populate('anio')
+  
+      const dataNuevoAlumno = {
+        generos: generos,
+        especialidades: especialidades,
+        anios: anios,
+        cursos: cursos,
+      }
+  
+  
+      res.status(200).json(dataNuevoAlumno)
+    } catch (err) {
+      next(err)
+    }
+  }
+
 module.exports = {
     obtenerAlumnos,
     obtenerAlumnoPorId,
@@ -571,5 +594,6 @@ module.exports = {
     crearAlumno,
     modificarAlumno,
     modificarInscripcionAlumno,
-    pasarDeAnioAlumno
+    pasarDeAnioAlumno,
+    nuevoAlumno
 }

@@ -71,10 +71,11 @@ async function calificarAlumno(req, res, next) {
     diciembre: !req.body.diciembre ? 0 : req.body.diciembre,
     marzo: !req.body.marzo ? 0 : req.body.marzo,
   }
+  console.log(miCalificacion.idCalificacion);
 
   try {
     // Califico al alumno
-    const calificacion = await Calificacion.findById(miCalificacion.idCalificacion).populate('curso')
+    const calificacion = await Calificacion.findById(miCalificacion.idCalificacion).populate('curso').populate('alumno')
     if (!calificacion) {
       logger.debug('No existe calificación!')
       return res.status(404).json('No existe calificación!')
@@ -171,10 +172,31 @@ async function calificarAlumno(req, res, next) {
   }
 }
 
+async function obtenerCalificacionesPorCurso(req, res, next) {
+  try {
+    const calificaciones = await Calificacion.find().populate('curso').populate('materia').populate('alumno')
+
+    // const calificacion = {
+    //   curso: calif.curso,
+    //   calificaciones: calificaciones.map(calif => [
+    //     calif.materia,
+    //     calif.notas,
+    //     calif.aprobada],
+    //   )
+    // }
+
+    res.status(200).json(calificaciones)
+    console.log(calificaciones);
+  } catch (err) {
+    next(err)
+  }
+}
+
 
 
 module.exports = {
   obtenerCalificacionesPorId,
   obtenerCalificacionesPorCursoMateria,
-  calificarAlumno
+  calificarAlumno,
+  obtenerCalificacionesPorCurso,
 }

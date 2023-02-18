@@ -4,17 +4,17 @@ import { CardHeader } from "@mui/material";
 import { Grid, Button, Container, Stack, Typography } from "@mui/material";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import { useNavigate } from 'react-router-dom';
-import  {useEffect} from 'react';
-
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function AlumnoCard() {
   const navigate = useNavigate();
-
   const handleVerAlumnos = () => {
-   navigate('/alumnos');
-
-  }
+    navigate("/alumnos");
+  };
+  const handleRegistrar = () => {
+    navigate("/registrar");
+  };
 
   return (
     <Card sx={{ minWidth: 275 }}>
@@ -25,10 +25,10 @@ function AlumnoCard() {
       </CardContent>
       <CardActions>
         <Stack spacing={1}>
-          <Button variant="contained" size="small">
+          <Button variant="contained" onClick={handleRegistrar} size="small">
             Registrar alumno
           </Button>
-          <Button variant="contained" onClick={handleVerAlumnos}size="small">
+          <Button variant="contained" onClick={handleVerAlumnos} size="small">
             Buscar alumno
           </Button>
         </Stack>
@@ -38,6 +38,12 @@ function AlumnoCard() {
 }
 
 function CursoCard() {
+  const navigateCursos = useNavigate();
+
+  const handleCursos = () => {
+    navigateCursos("/cursos");
+  };
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -50,8 +56,8 @@ function CursoCard() {
           <Button variant="contained" size="small">
             Nuevo Curso
           </Button>
-          <Button variant="contained" size="small">
-            Buscar Curso
+          <Button variant="contained" onClick={handleCursos} size="small">
+            Ver cursos
           </Button>
         </Stack>
       </CardActions>
@@ -106,42 +112,39 @@ function MateriaCard() {
 export default function Dashboard() {
   const navigate = useNavigate();
 
-    useEffect(() => {
-      if(!localStorage.getItem('token')) {
-        navigate('/');
-      } }, [])
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/");
+    }
+  }, []);
 
-    return (
-      <>
-        <NavBar />
-        <CardHeader />
-        <Container>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            mb={5}
-          >
-            <Grid container spacing={2}>
-              <Grid item>
-                <AlumnoCard />
-              </Grid>
-              <Grid item>
-                <CursoCard />
-              </Grid>
-              <Grid item>
-                <MateriaCard />
-              </Grid>
-              <Grid item>
-                <CalificacionCard />
-              </Grid>
+  return (
+    <>
+      <NavBar />
+      <CardHeader />
+      <Container>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={5}
+        >
+          <Grid container spacing={2}>
+            <Grid item>
+              <AlumnoCard />
             </Grid>
-          </Stack>
-        </Container>
-      </>
-    );
-  }
-    
-  
-  
-
+            <Grid item>
+              <CursoCard />
+            </Grid>
+            <Grid item>
+              <MateriaCard />
+            </Grid>
+            <Grid item>
+              <CalificacionCard />
+            </Grid>
+          </Grid>
+        </Stack>
+      </Container>
+    </>
+  );
+}
