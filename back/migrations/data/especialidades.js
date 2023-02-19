@@ -15,7 +15,7 @@ const especialidades = [
   },
   {
     _id: mongoose.Types.ObjectId('000000000000000000001000'),
-    especialidad: "Sin definir"
+    especialidad: " "
   },]
 
 exports.especialidades = especialidades

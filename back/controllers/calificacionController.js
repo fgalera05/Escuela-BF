@@ -71,7 +71,7 @@ async function calificarAlumno(req, res, next) {
     diciembre: !req.body.diciembre ? 0 : req.body.diciembre,
     marzo: !req.body.marzo ? 0 : req.body.marzo,
   }
-  console.log(miCalificacion.idCalificacion);
+  // console.log(miCalificacion.idCalificacion);
 
   try {
     // Califico al alumno
@@ -192,10 +192,31 @@ async function obtenerCalificacionesPorCurso(req, res, next) {
   }
 }
 
+async function obtenerCalificacionesPorCursoPorId(req, res, next) {
+  const curso =req.params.curso
+  const alumno =req.params.alumno
+  try {
+    const calificaciones = await Calificacion.find({curso: curso, alumno: alumno}).populate('curso').populate('materia').populate('alumno')
 
+    // const calificacion = {
+    //   curso: calif.curso,
+    //   calificaciones: calificaciones.map(calif => [
+    //     calif.materia,
+    //     calif.notas,
+    //     calif.aprobada],
+    //   )
+    // }
+
+    res.status(200).json(calificaciones)
+    console.log(calificaciones);
+  } catch (err) {
+    next(err)
+  }
+}
 
 module.exports = {
   obtenerCalificacionesPorId,
+  obtenerCalificacionesPorCursoPorId,
   obtenerCalificacionesPorCursoMateria,
   calificarAlumno,
   obtenerCalificacionesPorCurso,

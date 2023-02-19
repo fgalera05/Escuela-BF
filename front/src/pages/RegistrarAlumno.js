@@ -103,8 +103,7 @@ function RegistrarAlumno() {
       const msg = await axios.post(
         "http://localhost:8000/alumnos",
         {
-          apellido:
-            data.apellido.charAt(0).toUpperCase() + data.apellido.slice(1),
+          apellido: data.apellido.charAt(0).toUpperCase() + data.apellido.slice(1),
           nombre: data.nombre.charAt(0).toUpperCase() + data.nombre.slice(1),
           genero: data.genero,
           dni: data.dni,
@@ -154,10 +153,13 @@ function RegistrarAlumno() {
         setAnios([
           { id: "1", anio: "-" },
           ...response.data.slice(0, -1).map((e) =>
-            // console.log(e.especialidad.especialidad)
             ({ id: e._id, anio: e.nombre + ": " + e.especialidad.especialidad })
           ),
         ]);
+        if(response.data.length === 0){
+          setMsg("No hay años creados para realizar inscripciones");
+          setOpen(true);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -392,7 +394,7 @@ function RegistrarAlumno() {
                 variant="contained"
                 onClick={handleCancelar}
                 sx={{ mt: 3, ml: 1 }}
-                color="error"
+                color="secondary"
               >
                 {1 === steps.length - 1 ? "Place order" : "Cancelar"}
               </Button>

@@ -1,6 +1,6 @@
 import NavBar from "../componentes/NavBar";
 import Card from "@mui/material/Card";
-import { CardHeader } from "@mui/material";
+import { Alert, CardHeader, Divider, Snackbar } from "@mui/material";
 import { Grid, Button, Container, Stack, Typography } from "@mui/material";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -39,6 +39,8 @@ import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
+import ArticleIcon from "@mui/icons-material/Article";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 
 function BasicDatePicker(props) {
   const [value, setValue] = React.useState(props.fecha);
@@ -261,7 +263,7 @@ function MiDialog({ thisAlumno, thisGeneros, onModificar }) {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="error" onClick={handleClose}>
+          <Button variant="contained" color="secondary" onClick={handleClose}>
             Cancelar
           </Button>
           <Button
@@ -277,16 +279,143 @@ function MiDialog({ thisAlumno, thisGeneros, onModificar }) {
   );
 }
 
+function Boletin({ thisAlumno, thisCurso, onModificar }) {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    required,
+  } = useForm();
+  const [open, setOpen] = React.useState(false);
+  const alumno = thisAlumno;
+
+  const [curso, setCurso] = React.useState(thisCurso);
+  const [materias, setMaterias] = React.useState([]);
+  const [calificaciones, setCalificaciones] = React.useState([]);
+
+  const [apellido, setApellido] = React.useState(thisAlumno.alumno.apellido);
+  const [nombre, setNombre] = React.useState(thisAlumno.alumno.nombre);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClickGuardar = (data) => {
+    console.log(data);
+    onModificar(alumno._id, apellido, nombre);
+    setOpen(false);
+  };
+
+  const token = localStorage.getItem("token");
+
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:8000/cursos/"+curso._id,{
+  //       headers: {
+  //         Authorization: "Bearer " + token,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       console.log(response.data);
+  //       setMaterias(response.data.anio.materias);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, []);
+
+  useEffect(() => {
+    axios
+      .get(
+        "http://localhost:8000/calificaciones/calificacion/curso/" +
+          curso._id +
+          "/" +
+          alumno._id,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setCalificaciones(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  return (
+    <>
+      <IconButton
+        color="secondary"
+        aria-label="edit"
+        component="label"
+        onClick={handleClickOpen}
+      >
+        <ArticleIcon />
+      </IconButton>
+
+      <Dialog open={open} onClose={handleClose} maxWidth="string">
+        <DialogTitle>Boletín de: {apellido}, {nombre}</DialogTitle>
+        <DialogContent>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Materia</TableCell>
+                  <TableCell>Primer cuatrimestre</TableCell>
+                  <TableCell>Segundo cuatrimestre</TableCell>
+                  <TableCell>Tercer cuatrimestre</TableCell>
+                  <TableCell>Diciembre</TableCell>
+                  <TableCell>Marzo</TableCell>
+                  <TableCell>Nota final</TableCell>
+                  <TableCell>Aprobada</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody  >
+                {calificaciones.map((c,i) =>(
+                  
+                <TableRow key={c._id} >
+                  <TableCell>{c.materia.materia}</TableCell>
+                  <TableCell align="center">{c.notas.primerCuatrimestre>0?c.notas.primerCuatrimestre:" "}</TableCell>
+                  <TableCell align="center">{c.notas.segundoCuatrimestre>0?c.notas.segundoCuatrimestre:" "}</TableCell>
+                  <TableCell align="center">{c.notas.tercerCuatrimestre>0?c.notas.tercerCuatrimestre:" "}</TableCell>
+                  <TableCell align="center">{c.notas.diciembre>0?c.notas.diciembre:" "}</TableCell>
+                  <TableCell align="center">{c.notas.marzo>0?c.notas.marzo:" "}</TableCell>
+                  <TableCell align="center">{c.notas.notaFinal>0?c.notas.notaFinal:" "}</TableCell>
+                  <TableCell align="center">{c.aprobada?<DoneAllIcon color="primary"/>:""}</TableCell> 
+                </TableRow>))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="secondary" onClick={handleClose}>
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
+
 function Alumnos() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [alumnos, setAlumnos] = useState([]);
   const [generos, setGeneros] = useState([]);
-
   const [copyList, setCopyList] = useState(alumnos);
+  const [openAlert, setOpenAlert] = useState(false);
 
   const requestSearch = (searched) => {
-    setCopyList(alumnos.filter((a) => a._id.includes(searched)));
+    setCopyList(alumnos.filter((a) => parseInt(a.dni) === parseInt(searched)));
   };
 
   const onModificar = async (
@@ -360,11 +489,23 @@ function Alumnos() {
       })
       .then((response) => {
         setGeneros(response.data);
+        if(response.data.length === 0){
+          setOpenAlert(true);
+        }
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenAlert(false)
+  };
+
 
   return (
     <>
@@ -385,7 +526,6 @@ function Alumnos() {
               <TableRow>
                 <TableCell>Legajo</TableCell>
                 <TableCell>Apellido y nombre</TableCell>
-                <TableCell align="right">DNI</TableCell>
                 <TableCell align="right">Año</TableCell>
                 <TableCell align="right">Especialidad</TableCell>
                 <TableCell align="right">Curso</TableCell>
@@ -400,18 +540,24 @@ function Alumnos() {
                     key={alumno._id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell align="left">{parseInt(alumno._id)}</TableCell>
+                    <TableCell align="left">{alumno.dni}</TableCell>
                     <TableCell component="th" scope="alumno">
                       {alumno.alumno.apellido}, {alumno.alumno.nombre}
                     </TableCell>
-                    <TableCell align="right">{alumno.dni}</TableCell>
                     <TableCell align="right">{alumno.anio.anio}</TableCell>
                     <TableCell align="right">
                       {alumno.especialidad.especialidad}
                     </TableCell>
                     <TableCell align="right">{alumno.curso.nombre}</TableCell>
                     <TableCell align="right">
-                      {alumno.previas == "0" ? "-" : alumno.previas}
+                      {alumno.previas == "0" ? " " : alumno.previas}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Boletin
+                        thisAlumno={alumno}
+                        thisCurso={alumno.curso}
+                        onModificar={onModificar}
+                      />
                     </TableCell>
                     <TableCell align="right">
                       <MiDialog
@@ -420,11 +566,27 @@ function Alumnos() {
                         onModificar={onModificar}
                       />
                     </TableCell>
+                    
                   </TableRow>
                 ))}
             </TableBody>
           </Table>
         </TableContainer>
+        <Snackbar
+          open={openAlert}
+          autoHideDuration={3000}
+          onClose={handleClose}
+          message="Note archived"
+          a
+        >
+            <Alert
+            onClose={handleClose}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            No hay alumnos inscriptos!
+          </Alert>
+          </Snackbar>
       </Container>
     </>
   );

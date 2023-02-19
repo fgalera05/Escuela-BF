@@ -81,8 +81,8 @@ const anios = [
     _id: new mongoose.Types.ObjectId('000000000000000000000016'),
     anio: 7,
     nombre: 'Egresados',
-    especialidad: null,
-    materias: null,
+    especialidad: mongoose.Types.ObjectId('000000000000000000001000'),
+    materias: mongoose.Types.ObjectId('000000000000000000001000'),
   }
 ]
 

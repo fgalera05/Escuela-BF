@@ -85,7 +85,9 @@ function Cursos() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {cursos.map((curso) => (
+            {cursos.sort((a,b)=> (
+              (a.anio.anio > b.anio.anio?1:-1)
+            )).map((curso) => (
               <Row key={curso._id} row={curso} />
             ))}
           </TableBody>
@@ -106,19 +108,10 @@ function Row(props) {
     <UserContext.Provider value={row}>
       <React.Fragment>
         <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-          {/* <TableCell>
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={() => setOpen(!open)}
-            >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell> */}
           <TableCell component="th" scope="row">
             {row.nombre}
           </TableCell>
-          <TableCell align="left">{row.anio.nombre}</TableCell>
+          <TableCell align="left">{row.anio.anio}</TableCell>
           <TableCell align="left">
             {row.anio.especialidad.especialidad}
           </TableCell>
@@ -126,27 +119,6 @@ function Row(props) {
             <MiButton label ="Ver alumnos" curso={row}/>
           </TableCell>
         </TableRow>
-        {/* <TableRow>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ margin: 1 }}>
-                <Typography variant="h6" gutterBottom component="div">
-                  Materias
-                </Typography>
-                <Table size="small" aria-label="purchases">
-                  <TableHead>
-                    <TableRow>
-                      {row.anio.materias.map((materia) => (
-                        // console.log(materia)
-                        <MiTableCell key={materia._id} materia={materia} />
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                </Table>
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow> */}
       </React.Fragment>
     </UserContext.Provider>
   );
