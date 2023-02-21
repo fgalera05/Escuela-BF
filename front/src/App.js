@@ -33,17 +33,91 @@ import axios from "axios";
 import { Box } from "@mui/system";
 import { useForm } from "react-hook-form";
 import SchoolIcon from "@mui/icons-material/School";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import Paper from '@mui/material/Paper';
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import Paper from "@mui/material/Paper";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import EditIcon from "@mui/icons-material/Edit";
 
 function AlumnoCard() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const [anios, setAnios] = React.useState([]);
+  const [cursos, setCursos] = React.useState([]);
+  const [alumnos, setAlumnos] = React.useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [msg, setMsg] = React.useState("");
+
   const handleVerAlumnos = () => {
-    navigate("/alumnos");
+    if (alumnos.length === 0) {
+      setMsg("No hay alumnos inscriptos");
+      setOpen(true);
+    } else {
+      navigate("/alumnos");
+    }
   };
+
   const handleRegistrar = () => {
-    navigate("/registrar");
+    if (anios.length === 0) {
+      setMsg("No hay anios creados para inscribir alumnos");
+      setOpen(true);
+    } else if (cursos.length === 0) {
+      setMsg("No hay cursos creados para inscribir alumnos");
+      setOpen(true);
+    } else {
+      navigate("/registrar");
+    }
+  };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/anios/", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        setAnios(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/alumnos/", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setAlumnos(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/cursos/", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        setCursos(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  const handleClose = (data) => {
+    setOpen(false);
   };
 
   return (
@@ -63,6 +137,16 @@ function AlumnoCard() {
           </Button>
         </Stack>
       </CardActions>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        message="Note archived"
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          {msg}
+        </Alert>
+      </Snackbar>
     </Card>
   );
 }
@@ -315,7 +399,189 @@ function CalificacionCard() {
   );
 }
 
+function MiDialog({ thisMateria, onModificar, anio, especialidad }) {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    required,
+  } = useForm();
+  const [open, setOpen] = React.useState(false);
+  const [materia, setMateria] = React.useState(thisMateria);
+  const idMateria = thisMateria._id;
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClickGuardar = (data) => {
+    console.log(data);
+    onModificar(idMateria, data.materia);
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <IconButton
+        color="primary"
+        aria-label="edit"
+        component="label"
+        onClick={handleClickOpen}
+      >
+        <EditIcon />
+      </IconButton>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Editar materia:</DialogTitle>
+        <DialogContent>
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "25ch" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <div>
+              <TextField
+                required
+                id="materia"
+                label="Materia"
+                defaultValue={materia.materia}
+                onChange={(e) => {
+                  setMateria(e.target.value);
+                }}
+                {...register("materia", {
+                  required: "Materia is required",
+                })}
+                aria-invalid={errors.materia ? "true" : "false"}
+              />
+            </div>
+            <div>
+              <TextField
+                disabled
+                id="anio"
+                label="Año"
+                defaultValue={anio}
+                onChange={(e) => {
+                  setMateria(e.target.value);
+                }}
+              />
+            </div>
+            <div>
+              <TextField
+                disabled
+                id="especialidad"
+                label="Especialidad"
+                defaultValue={especialidad}
+                onChange={(e) => {
+                  setMateria(e.target.value);
+                }}
+              />
+            </div>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="secondary" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(handleClickGuardar)}
+          >
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
 function MateriaCard() {
+  const [open, setOpen] = React.useState(false);
+  const token = localStorage.getItem("token");
+  const [anios, setAnios] = React.useState([]);
+  const [copyList, setCopyList] = React.useState(anios);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (data) => {
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/anios/", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setAnios(response.data);
+        setCopyList(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  const requestSearch = (searched) => {
+    const aniosFiltrados = anios.map((a) => ({
+      anio: a.anio,
+      especialidad: a.especialidad,
+      materias: a.materias.filter((m) =>
+        m.materia.includes(
+          searched ? searched[0].toUpperCase() + searched.slice(1) : searched
+        )
+      ),
+    }));
+    setCopyList(aniosFiltrados.filter((a) => a.materias.length > 0));
+  };
+
+  const onModificar = async (id, materia) => {
+    try {
+      console.log("Received values of form: ", id, materia);
+
+      await axios.patch(
+        "http://localhost:8000/materias/" + id,
+        {
+          materia: materia,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+
+      await axios
+      .get("http://localhost:8000/anios/", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setAnios(response.data);
+        setCopyList(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -325,12 +591,77 @@ function MateriaCard() {
       </CardContent>
       <CardActions>
         <Stack spacing={1}>
-          <Button variant="contained" size="small">
+          {/* <Button variant="contained" size="small">
             Nueva Materia
+          </Button> */}
+          <Button variant="contained" size="small" onClick={handleClickOpen}>
+            Ver Materias
           </Button>
-          <Button variant="contained" size="small">
-            Buscar Materia
-          </Button>
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>
+              <Typography>Materias:</Typography>
+            </DialogTitle>
+            <DialogContent>
+              <TextField
+                sx={{ width: 1 / 2 }}
+                variant="outlined"
+                placeholder="Buscar materia por nombre..."
+                type="search"
+                onChange={(e) => requestSearch(e.target.value)}
+              />
+              <DialogContentText></DialogContentText>
+              <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                  <TableHead>
+                    <TableRow>
+                    <TableCell>Código</TableCell>
+                      <TableCell align="left">Materia</TableCell>
+                      <TableCell align="left">Año</TableCell>
+                      <TableCell align="left">Especialidad</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {copyList
+                      .filter((a) => a.nombre !== "Egresados")
+                      .map((a) =>
+                        a.materias
+                          .sort((b, c) => (b.materia < c.materia ? -1 : 1))
+                          .map((m) => (
+                            <TableRow key={m._id}>
+                              <TableCell>{parseInt(m._id)}</TableCell>
+                              <TableCell>{m.materia}</TableCell>
+                              <TableCell align="left">{a.anio}</TableCell>
+                              <TableCell align="left">
+                                {a.especialidad.especialidad}
+                              </TableCell>
+                              <TableCell align="right">
+                                <MiDialog
+                                  thisMateria={m}
+                                  onModificar={onModificar}
+                                  anio={a.nombre}
+                                  especialidad={a.especialidad.especialidad}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))
+                      )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </DialogContent>
+            <DialogActions>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  variant="contained"
+                  onClick={handleClose}
+                  sx={{ mt: 3, ml: 1 }}
+                  color="secondary"
+                >
+                  Cerrar
+                </Button>
+              </Box>
+            </DialogActions>
+          </Dialog>
         </Stack>
       </CardActions>
     </Card>
@@ -343,7 +674,7 @@ function RowAnio(props) {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -353,10 +684,10 @@ function RowAnio(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
-          
+        <TableCell component="th" scope="row"></TableCell>
+        <TableCell align="left">
+          {anio.nombre}: {anio.especialidad.especialidad}
         </TableCell>
-        <TableCell align="left">{anio.nombre}: {anio.especialidad.especialidad}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -367,11 +698,14 @@ function RowAnio(props) {
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableBody>
-                  {anio.materias.map((materia) => (
-                    <TableRow key={materia._id}>
-                      <TableCell>{materia.materia}</TableCell>
-                    </TableRow>
-                  ))}
+                  {anio.materias
+                    .sort((b, c) => (b.materia < c.materia ? -1 : 1))
+                    .map((materia) => (
+                      <TableRow key={materia._id}>
+                        <TableCell>{parseInt(materia._id)}</TableCell>
+                        <TableCell>{materia.materia}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </Box>
@@ -381,6 +715,7 @@ function RowAnio(props) {
     </React.Fragment>
   );
 }
+
 
 function AnioCard() {
   const [open, setOpen] = React.useState(false);
@@ -420,9 +755,9 @@ function AnioCard() {
       </CardContent>
       <CardActions>
         <Stack spacing={1}>
-          <Button variant="contained" size="small">
+          {/* <Button variant="contained" size="small">
             Nuevo año
-          </Button>
+          </Button> */}
           <Button variant="contained" size="small" onClick={handleClickOpen}>
             Ver años
           </Button>
@@ -435,13 +770,11 @@ function AnioCard() {
               <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                   <TableBody>
-                    {anios.filter(
-                      (a)=>(
-                        a.nombre !== "Egresados"
-                      )
-                    ).map((a ) => (
-                      <RowAnio key={a._id} anio={a} />
-                    ))}
+                    {anios
+                      .filter((a) => a.nombre !== "Egresados")
+                      .map((a) => (
+                        <RowAnio key={a._id} anio={a} />
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -465,11 +798,91 @@ function AnioCard() {
   );
 }
 
+function MiDialogEspecialidad({ thisEspecialidad, onModificar }) {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    required,
+  } = useForm();
+  const [open, setOpen] = React.useState(false);
+  const [especialidad, setEspecialidad] = React.useState(thisEspecialidad);
+  const idEspecialidad = especialidad._id;
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClickGuardar = (data) => {
+    console.log(data);
+    onModificar(idEspecialidad, data.especialidad);
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <IconButton
+        color="primary"
+        aria-label="edit"
+        component="label"
+        onClick={handleClickOpen}
+      >
+        <EditIcon />
+      </IconButton>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Editar especialidad:</DialogTitle>
+        <DialogContent>
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "25ch" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <div>
+              <TextField
+                required
+                id="especialidad"
+                label="Especialidad"
+                defaultValue={especialidad.especialidad}
+                onChange={(e) => {
+                  setEspecialidad(e.target.value);
+                }}
+                {...register("especialidad", {
+                  required: "Especialidad is required",
+                })}
+                aria-invalid={errors.especialidad ? "true" : "false"}
+              />
+            </div>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="secondary" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(handleClickGuardar)}
+          >
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
 function EspecialidadCard() {
   const [open, setOpen] = React.useState(false);
   const token = localStorage.getItem("token");
   const [especialidades, setEspecialidades] = React.useState([]);
-  let aux;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -495,6 +908,31 @@ function EspecialidadCard() {
       });
   }, []);
 
+  const onModificar = async (id, especialidad) => {
+    try {
+      console.log("Received values of form: ", id, especialidad);
+
+      await axios
+      .patch("http://localhost:8000/especialidades/"+id, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      },{
+        especialidad: especialidad,
+      })
+      .then((response) => {
+        console.log(response.data);
+        setEspecialidades(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -513,22 +951,26 @@ function EspecialidadCard() {
             </DialogTitle>
             <DialogContent>
               <DialogContentText></DialogContentText>
-              <List>
-                {/* {console.log(especialidades)} */}
-                {especialidades.filter(
-                  (e) => (
-                      e.especialidad != " "
-                  )
-                ).map((e) => (
-                  <ListItem key={e._id}>
-                    <ListItemIcon>
-                      <SchoolIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={e.especialidad} />
-                    
-                  </ListItem>
-                ))}
-              </List>
+              <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                  <TableBody>
+                    {especialidades
+                      .filter((e) => e.especialidad != " ")
+                          .map((e) => (
+                            <TableRow key={e._id}>
+                              <TableCell><SchoolIcon /></TableCell>
+                              <TableCell>{e.especialidad}</TableCell>
+                              <TableCell align="right">
+                                <MiDialogEspecialidad
+                                  thisEspecialidad={e}
+                                  onModificar={onModificar}
+                                />
+                              </TableCell>
+                            </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </DialogContent>
             <DialogActions>
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -562,7 +1004,7 @@ export default function Dashboard() {
     <>
       <NavBar />
       <CardHeader />
-      <Container>
+      <Container fixed>
         <Stack
           direction="row"
           alignItems="center"
@@ -571,12 +1013,6 @@ export default function Dashboard() {
         >
           <Grid container spacing={2}>
             <Grid item>
-              <AlumnoCard />
-            </Grid>
-            <Grid item>
-              <CursoCard />
-            </Grid>
-            <Grid item>
               <EspecialidadCard />
             </Grid>
             <Grid item>
@@ -584,6 +1020,12 @@ export default function Dashboard() {
             </Grid>
             <Grid item>
               <MateriaCard />
+            </Grid>
+            <Grid item>
+              <AlumnoCard />
+            </Grid>
+            <Grid item>
+              <CursoCard />
             </Grid>
             <Grid item>
               <CalificacionCard />

@@ -311,8 +311,6 @@ function Boletin({ thisAlumno, thisCurso, onModificar }) {
   };
 
   const token = localStorage.getItem("token");
-
-  // useEffect(() => {
   //   axios
   //     .get("http://localhost:8000/cursos/"+curso._id,{
   //       headers: {
@@ -379,7 +377,9 @@ function Boletin({ thisAlumno, thisCurso, onModificar }) {
                 </TableRow>
               </TableHead>
               <TableBody  >
-                {calificaciones.map((c,i) =>(
+                {calificaciones.sort(
+                  (c,d)=>(c.materia.materia<d.materia.materia?-1:1)
+                ).map((c,i) =>(
                   
                 <TableRow key={c._id} >
                   <TableCell>{c.materia.materia}</TableCell>
@@ -515,7 +515,7 @@ function Alumnos() {
         <TextField
           sx={{ width: 1 / 2 }}
           variant="outlined"
-          placeholder="Buscar alumno..."
+          placeholder="Buscar alumno por legajo..."
           type="search"
           onChange={(e) => requestSearch(e.target.value)}
         />

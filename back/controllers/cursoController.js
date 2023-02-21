@@ -172,6 +172,7 @@ async function obtenerCursoPorId(req, res, next) {
 
 }
 
+
 module.exports = {
   obtenerCursos,
   obtenerCursoPorId,

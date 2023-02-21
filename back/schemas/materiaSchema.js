@@ -8,7 +8,7 @@ const { ObjectId } = Schema.Types
 
 const materiaSchema = new Schema({
    materia: { type: String, required: true},
-   anio: {type: Number, required: true},
+   anio: {type: Number},
 })
 
 //materiaSchema.plugin(uniqueValidator); //valida que el campo sea único

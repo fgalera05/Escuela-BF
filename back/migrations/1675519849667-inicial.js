@@ -31,15 +31,15 @@ async function up () {
   await Especialidad.collection.insertMany(especialidades)
   await Materia.collection.insertMany(materias)
   await Anio.collection.insertMany(anios)
-  // await Curso.collection.insertMany(cursos)
+  await Curso.collection.insertMany(cursos)
   await Genero.collection.insertMany(generos)
-  // await crearAlumno(alumno1)
-  // await crearAlumno(alumno2)
-  // await crearAlumno(alumno3)
-  // await crearAlumno(alumno3b)
-  // await crearAlumno(alumno4)
-  // await crearAlumno(alumno5)
-  // await crearAlumno(alumno6)
+  await crearAlumno(alumno1)
+  await crearAlumno(alumno2)
+  await crearAlumno(alumno3)
+  await crearAlumno(alumno3b)
+  await crearAlumno(alumno4)
+  await crearAlumno(alumno5)
+  await crearAlumno(alumno6)
   await Rol.collection.insertMany(roles)
   await Usuario.collection.insertMany(usuarios)
 }
@@ -51,11 +51,10 @@ async function down () {
   await mongoose.model('Anio').deleteMany()
   await mongoose.model('Curso').deleteMany()
   await mongoose.model('Genero').deleteMany()
-  // await mongoose.model('Alumno').deleteMany()
-  // await mongoose.model('Calificacion').deleteMany()
+  await mongoose.model('Alumno').deleteMany()
+  await mongoose.model('Calificacion').deleteMany()
   await mongoose.model('Rol').deleteMany()
   await mongoose.model('Usuario').deleteMany()
- 
 }
 
 module.exports = { up, down };

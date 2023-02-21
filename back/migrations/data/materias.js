@@ -96,7 +96,7 @@ const materias5toMMO = [
     {_id: mongoose.Types.ObjectId("000000000000000000000081"),materia: "Práctica Proyectual Integradora II",seDicta: true, anio:5 },
     {_id: mongoose.Types.ObjectId("000000000000000000000082"),materia: "Taller de técnicas, sistemas constructivos e instalaciones III",seDicta: true, anio:5 },
     {_id: mongoose.Types.ObjectId("000000000000000000000083"),materia: "Matemática",seDicta: true, anio:5 },
-    {_id: mongoose.Types.ObjectId("000000000000000000000084"),materia: "instalaciones III",seDicta: true, anio:5 },
+    {_id: mongoose.Types.ObjectId("000000000000000000000084"),materia: "Instalaciones III",seDicta: true, anio:5 },
     {_id: mongoose.Types.ObjectId("000000000000000000000085"),materia: "Sistemas Constructivos y de Fundaciones",seDicta: true, anio:5 },
     {_id: mongoose.Types.ObjectId("000000000000000000000086"),materia: "Sistemas estructurales de hormigón armado",seDicta: true, anio:5 },
     {_id: mongoose.Types.ObjectId("000000000000000000000087"),materia: "Sistemas estructurales metálicos y de madera",seDicta: true, anio:5 },
@@ -155,6 +155,6 @@ exports.materias3roTC = materias3roTC
 exports.materias4toMMO = materias4toMMO
 exports.materias4toTC = materias4toTC
 exports.materias5toMMO = materias5toMMO
-exports.materias5toTC = materias5toMMO
+exports.materias5toTC = materias5toTC
 exports.materias6toMMO = materias6toMMO
 exports.materias6toTC = materias6toTC
