@@ -65,17 +65,17 @@ async function calificarAlumno(req, res, next) {
 
   const miCalificacion = {
     idCalificacion: req.params.id,
-    primerCuatrimestre: !req.body.primerCuatrimestre ? 0 : req.body.primerCuatrimestre,
-    segundoCuatrimestre: !req.body.segundoCuatrimestre ? 0 : req.body.segundoCuatrimestre,
-    tercerCuatrimestre: !req.body.tercerCuatrimestre ? 0 : req.body.tercerCuatrimestre,
-    diciembre: !req.body.diciembre ? 0 : req.body.diciembre,
-    marzo: !req.body.marzo ? 0 : req.body.marzo,
+    primerCuatrimestre: req.body.primerCuatrimestre,
+    segundoCuatrimestre: req.body.segundoCuatrimestre, 
+    tercerCuatrimestre: req.body.tercerCuatrimestre,
+    diciembre: req.body.diciembre,
+    marzo: req.body.marzo,
   }
-  // console.log(miCalificacion.idCalificacion);
+  // console.log("))))))))))))",miCalificacion);
 
   try {
     // Califico al alumno
-    const calificacion = await Calificacion.findById(miCalificacion.idCalificacion).populate('curso').populate('alumno')
+    const calificacion = await Calificacion.findById(miCalificacion.idCalificacion).populate('curso').populate('alumno').populate('materia')
     if (!calificacion) {
       logger.debug('No existe calificación!')
       return res.status(404).json('No existe calificación!')
@@ -83,7 +83,13 @@ async function calificarAlumno(req, res, next) {
     calificacion.notas.primerCuatrimestre = miCalificacion.primerCuatrimestre,
       calificacion.notas.segundoCuatrimestre = miCalificacion.segundoCuatrimestre,
       calificacion.notas.tercerCuatrimestre = miCalificacion.tercerCuatrimestre;
-    calificacion.notas.promedio = ((parseFloat(miCalificacion.primerCuatrimestre) + parseFloat(miCalificacion.segundoCuatrimestre) + parseFloat(miCalificacion.tercerCuatrimestre)) / 3).toFixed(1);
+      console.log("~~~~~~~~~~~~~~~~~~~~~~~~:", (parseInt(miCalificacion.primerCuatrimestre) >0 && parseFloat(miCalificacion.segundoCuatrimestre) > 0 && parseFloat(miCalificacion.tercerCuatrimestre) >0));
+      if (parseInt(miCalificacion.primerCuatrimestre) >0 && parseFloat(miCalificacion.segundoCuatrimestre) >0 && parseFloat(miCalificacion.tercerCuatrimestre)>0){
+        calificacion.notas.promedio = ((parseFloat(miCalificacion.primerCuatrimestre) + parseFloat(miCalificacion.segundoCuatrimestre) + parseFloat(miCalificacion.tercerCuatrimestre)) / 3).toFixed(1);
+      }else{
+        calificacion.notas.promedio = 0
+      }
+      
 
     if (calificacion.notas.promedio >= calificacionCursada) {
       calificacion.aprobada = true;
@@ -165,7 +171,7 @@ async function calificarAlumno(req, res, next) {
       }
     }
     await alumno.save()
-
+    console.log("la respuesta es:", calificacion);
     res.status(200).json(calificacion)
   } catch (err) {
     next(err)

@@ -38,6 +38,7 @@ async function obtenerAlumnosCursos(req, res, next) {
       nombre: "",
       anio: 0,
       especialidad: "",
+      materias: [],
     },
     alumnos: [],
   };
@@ -49,6 +50,12 @@ async function obtenerAlumnosCursos(req, res, next) {
         path: "anio",
         populate: {
           path: "materias",
+        },
+      })
+      .populate({
+        path: "anio",
+        populate: {
+          path: "especialidad",
         },
       });
 
@@ -98,6 +105,7 @@ async function obtenerAlumnosCursos(req, res, next) {
     cursoActual.curso.nombre = cursoData.nombre;
     cursoActual.curso.anio = cursoData.anio.anio;
     cursoActual.curso.especialidad = cursoData.anio.especialidad;
+    cursoActual.curso.materias = cursoData.anio.materias;
 
     res.status(200).json(cursoActual);
   } catch (err) {

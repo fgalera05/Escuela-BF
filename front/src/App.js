@@ -508,7 +508,21 @@ function MateriaCard() {
   const [anios, setAnios] = React.useState([]);
   const [copyList, setCopyList] = React.useState(anios);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = async () => {
+    await axios
+    .get("http://localhost:8000/anios/", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
+      setAnios(response.data);
+      setCopyList(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
     setOpen(true);
   };
 
@@ -563,20 +577,19 @@ function MateriaCard() {
       );
 
       await axios
-      .get("http://localhost:8000/anios/", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        setAnios(response.data);
-        setCopyList(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
+        .get("http://localhost:8000/anios/", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          setAnios(response.data);
+          setCopyList(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } catch (err) {
       console.log(err);
     }
@@ -614,7 +627,7 @@ function MateriaCard() {
                 <Table aria-label="collapsible table">
                   <TableHead>
                     <TableRow>
-                    <TableCell>Código</TableCell>
+                      <TableCell>Código</TableCell>
                       <TableCell align="left">Materia</TableCell>
                       <TableCell align="left">Año</TableCell>
                       <TableCell align="left">Especialidad</TableCell>
@@ -716,17 +729,29 @@ function RowAnio(props) {
   );
 }
 
-
 function AnioCard() {
   const [open, setOpen] = React.useState(false);
   const token = localStorage.getItem("token");
   const [anios, setAnios] = React.useState([]);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = async () => {
+    await axios
+        .get("http://localhost:8000/anios/", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          setAnios(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     setOpen(true);
   };
 
-  const handleClose = (data) => {
+  const handleClose = () => {
     setOpen(false);
   };
 
@@ -910,24 +935,30 @@ function EspecialidadCard() {
 
   const onModificar = async (id, especialidad) => {
     try {
-      console.log("Received values of form: ", id, especialidad);
+      console.log("Received values of form: ", id, especialidad, token);
 
       await axios
-      .patch("http://localhost:8000/especialidades/"+id, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      },{
-        especialidad: especialidad,
-      })
-      .then((response) => {
-        console.log(response.data);
-        setEspecialidades(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
+        .patch(
+          "http://localhost:8000/especialidades/" + id,
+          {
+            especialidad: especialidad,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          const especialidadesCopy = especialidades.filter((e)=>(
+            e._id !== response.data._id
+          ));
+          setEspecialidades([response.data,...especialidadesCopy]);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } catch (err) {
       console.log(err);
     }
@@ -954,20 +985,22 @@ function EspecialidadCard() {
               <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                   <TableBody>
-                    {especialidades
+                    {especialidades.sort((a,b)=>(a.especialidad<b.especialidad?-1:1))
                       .filter((e) => e.especialidad != " ")
-                          .map((e) => (
-                            <TableRow key={e._id}>
-                              <TableCell><SchoolIcon /></TableCell>
-                              <TableCell>{e.especialidad}</TableCell>
-                              <TableCell align="right">
-                                <MiDialogEspecialidad
-                                  thisEspecialidad={e}
-                                  onModificar={onModificar}
-                                />
-                              </TableCell>
-                            </TableRow>
-                    ))}
+                      .map((e) => (
+                        <TableRow key={e._id}>
+                          <TableCell>
+                            <SchoolIcon />
+                          </TableCell>
+                          <TableCell>{e.especialidad}</TableCell>
+                          <TableCell align="right">
+                            <MiDialogEspecialidad
+                              thisEspecialidad={e}
+                              onModificar={onModificar}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>

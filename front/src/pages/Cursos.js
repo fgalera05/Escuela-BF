@@ -124,10 +124,6 @@ function Row(props) {
   );
 }
 
-function MiTableCell(props) {
-  return <TableCell key={props.materia._id}>{props.materia.materia}</TableCell>;
-}
-
 function MiButton(props) {
   const [curso, setCurso] = useState(props.curso)
   const navigate = useNavigate();

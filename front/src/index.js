@@ -14,6 +14,7 @@ import {
 } from "react-router-dom";
 import Cursos from './pages/Cursos';
 import AlumnosCurso from './pages/AlumnosCurso';
+import Calificaciones from './pages/Calificaciones';
 
 const container = document.getElementById('root');
 const root = createRoot(container); 
