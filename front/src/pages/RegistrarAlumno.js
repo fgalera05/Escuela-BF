@@ -48,7 +48,6 @@ function RegistrarAlumno() {
     register,
     formState: { errors },
     handleSubmit,
-    required,
     reset
   } = useForm();
 
@@ -216,7 +215,6 @@ function RegistrarAlumno() {
           >
             <div>
               <TextField
-                required
                 id="apellido"
                 label="Apellidos"
                 defaultValue={apellido}
@@ -228,7 +226,7 @@ function RegistrarAlumno() {
                 })}
                 aria-invalid={errors.apellido ? "true" : "false"}
               />
-              {errors.nombre && <p role="alert">{errors.apellido?.message}</p>}
+              {errors.apellido && <p role="alert">{errors.apellido?.message}</p>}
               <TextField
                 required
                 id="nombre"

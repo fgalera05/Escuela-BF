@@ -113,6 +113,20 @@ async function obtenerAlumnosCursos(req, res, next) {
   }
 }
 
+async function obtenerCantidadAlumnosCursoPorId(req, res, next) {
+  const curso = req.params.id;
+
+  try {
+    const cursoData = await Curso.findById(curso)
+
+    const alumnos = await Alumno.find({ curso: cursoData.id });
+    
+    res.status(200).json(alumnos.length);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function crearCurso(req, res, next) {
   try {
     const nuevoCurso = {
@@ -186,4 +200,5 @@ module.exports = {
   obtenerCursoPorId,
   obtenerAlumnosCursos,
   crearCurso,
+  obtenerCantidadAlumnosCursoPorId
 };

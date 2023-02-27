@@ -109,31 +109,30 @@ function AlumnosCurso() {
     setOpenCalif(true);
   };
 
-  const onModificarResumen = async (data) =>{
-   if (data){
-    await axios
-      .get("http://localhost:8000/cursos/alumnos/" + curso, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        if (response.data.alumnos.length === 0) {
-          setOpenAlert(true);
-        } else {
-          console.log(openAlert);
-          console.log(response.data.alumnos[0]);
-          setAlumnos(response.data.alumnos);
-          setMaterias(response.data.alumnos[0][2]);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const onModificarResumen = async (data) => {
+    if (data) {
+      await axios
+        .get("http://localhost:8000/cursos/alumnos/" + curso, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+          if (response.data.alumnos.length === 0) {
+            setOpenAlert(true);
+          } else {
+            console.log(openAlert);
+            console.log(response.data.alumnos[0]);
+            setAlumnos(response.data.alumnos);
+            setMaterias(response.data.alumnos[0][2]);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   };
 
- 
   return (
     <>
       <NavBar />
@@ -158,8 +157,8 @@ function AlumnosCurso() {
                       {m.materia.materia}
                     </TableCell>
                   ))}
+                <TableCell>Boletín</TableCell>
                 <TableCell>Pasa de año</TableCell>
-                <TableCell>Calificaciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -181,25 +180,25 @@ function AlumnosCurso() {
                         )}
                       </TableCell>
                     ))}
-                  <TableCell>
-                    {a[0].pasaDeAnio ? (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="secondary"
-                      >
-                        Pasar
-                      </Button>
-                    ) : (
-                      a.pasaDeAnio
-                    )}
-                  </TableCell>
                   <TableCell align="right">
                     <Boletin
                       thisAlumno={a[1]}
                       thisCurso={curso}
                       onModificar={onModificarResumen}
                     />
+                  </TableCell>
+                  <TableCell>
+                    {a[0].pasaDeAnio ? (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                      >
+                        Pasar
+                      </Button>
+                    ) : (
+                      a.pasaDeAnio
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -221,7 +220,7 @@ function AlumnosCurso() {
   );
 }
 
-function Boletin({ thisAlumno, thisCurso, onModificar}) {
+function Boletin({ thisAlumno, thisCurso, onModificar }) {
   const {
     register,
     formState: { errors },
@@ -277,14 +276,10 @@ function Boletin({ thisAlumno, thisCurso, onModificar}) {
       });
   }, []);
 
-
-  const onModificarBoletin= (data) =>{
-    const filtradas = calificaciones.filter(c => (
-      c._id !== data._id
-    ))
-    setCalificaciones([data,...filtradas]);
-  }
-
+  const onModificarBoletin = (data) => {
+    const filtradas = calificaciones.filter((c) => c._id !== data._id);
+    setCalificaciones([data, ...filtradas]);
+  };
 
   return (
     <>
@@ -349,7 +344,7 @@ function Boletin({ thisAlumno, thisCurso, onModificar}) {
                         {c.notas.notaFinal > 0 ? c.notas.notaFinal : " "}
                       </TableCell>
                       <TableCell align="center">
-                        {c.aprobada ? <DoneAllIcon color="primary" /> : ""}
+                        {c.aprobada ? <DoneAllIcon color="secondary" /> : ""}
                       </TableCell>
                       <TableCell align="center">
                         <MiDialog
@@ -414,16 +409,24 @@ function MiDialog({ thisCalificacion, onModificar }) {
   const handleClickGuardar = async (data) => {
     console.log(data);
     try {
-      console.log("Received values of form: ", id, primer, segundo, tercer, diciembre, marzo);
+      console.log(
+        "Received values of form: ",
+        id,
+        primer,
+        segundo,
+        tercer,
+        diciembre,
+        marzo
+      );
 
-    const nueva = await axios.patch(
-        "http://localhost:8000/calificaciones/"+ id,
+      const nueva = await axios.patch(
+        "http://localhost:8000/calificaciones/" + id,
         {
           primerCuatrimestre: data.primer,
           segundoCuatrimestre: data.segundo,
           tercerCuatrimestre: data.tercer,
           diciembre: data.diciembre,
-          marzo: data.marzo
+          marzo: data.marzo,
         },
         {
           headers: {
@@ -434,11 +437,9 @@ function MiDialog({ thisCalificacion, onModificar }) {
       console.log("nuevaaaa", nueva);
 
       onModificar(nueva.data);
-      
     } catch (err) {
       console.log(err);
     }
-    
 
     setOpen(false);
   };
@@ -599,5 +600,6 @@ function MiDialog({ thisCalificacion, onModificar }) {
     </>
   );
 }
+
 
 export default AlumnosCurso;
