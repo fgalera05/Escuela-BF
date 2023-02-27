@@ -108,6 +108,69 @@ async function crearAlumno(alumno) {
         }
       ))
 
+      if (existeCurso.anio.anio > 1){
+
+      const cursosAnteriores = await Curso.find({anio: {$lt: existeCurso.anio }}).populate('anio')
+        .populate(
+            {
+                path: 'anio',
+                populate: {
+                    path: 'especialidad',
+                }
+            }
+        )
+        .populate(
+            {
+                path: 'anio',
+                populate: {
+                    path: 'materias',
+                }
+            }
+        )
+
+        const cursosFiltrados = cursosAnteriores.filter( c => (
+            (c.anio.especialidad.id === existeCurso.anio.especialidad.id || (c.anio.anio <= 2) )
+        ))
+        // console.log("*****#*#*#*#*#*#**#&#^^$&@#@:", cursosFiltrados);  
+
+        let cursosPrevios = []
+
+        if (cursosFiltrados.length == 2){
+            cursosPrevios = [cursosFiltrados[0]]
+            console.log("22222");
+        }
+        if (cursosFiltrados.length == 4 ){
+          cursosPrevios = [cursosFiltrados[0],cursosFiltrados[2]]
+        }
+
+        if (cursosFiltrados.length > 4){
+           cursosPrevios = [cursosFiltrados[0],cursosFiltrados[2],...cursosFiltrados.slice(3)]
+           console.log("4444444");
+        }
+        // cursosAnteriores.forEach(c => console.log(c))
+        console.log("*****#*#*#*#*#*#**#&#^^$&@#@:", cursosPrevios); 
+        
+        cursosPrevios.forEach(c => (
+            c.anio.materias.forEach(async element =>
+                await Calificacion.create(
+                    {
+                        curso: c,
+                        alumno: nuevoAlumno,
+                        materia: element,
+                        notas: {
+                            primerCuatrimestre: 0,
+                            segundoCuatrimestre: 0,
+                            tercerCuatrimestre: 0,
+                            promedio: 0,
+                            diciembre: 0,
+                            marzo: 0,
+                            notaFinal: 0,
+                        },
+                        aprobada: false
+                    }
+                )))
+        )}
+
 
 
   } catch (err) {
