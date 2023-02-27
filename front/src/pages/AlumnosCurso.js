@@ -78,8 +78,7 @@ function AlumnosCurso() {
         if (response.data.alumnos.length === 0) {
           setOpenAlert(true);
         } else {
-          console.log(openAlert);
-          console.log(response.data.alumnos[0]);
+          console.log("7777777",response.data.alumnos);
           setAlumnos(response.data.alumnos);
           setMaterias(response.data.alumnos[0][2]);
         }
@@ -122,7 +121,7 @@ function AlumnosCurso() {
             setOpenAlert(true);
           } else {
             console.log(openAlert);
-            console.log(response.data.alumnos[0]);
+            console.log("1111",response.data.alumnos[0]);
             setAlumnos(response.data.alumnos);
             setMaterias(response.data.alumnos[0][2]);
           }
@@ -188,17 +187,7 @@ function AlumnosCurso() {
                     />
                   </TableCell>
                   <TableCell>
-                    {a[0].pasaDeAnio ? (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="primary"
-                      >
-                        Pasar
-                      </Button>
-                    ) : (
-                      a.pasaDeAnio
-                    )}
+                    <PasarDeAnio alumno={a} course={curso}/>
                   </TableCell>
                 </TableRow>
               ))}
@@ -216,6 +205,135 @@ function AlumnosCurso() {
           El curso no tiene alumnos!
         </Alert>
       </Snackbar>
+    </>
+  );
+}
+
+function PasarDeAnio({alumno, course}) {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    required,
+  } = useForm();
+  const [open, setOpen] = React.useState(false);
+  const token = localStorage.getItem("token");
+  const [cursosDisponibles, setCursosDisponibles] =  React.useState([]);
+  const [seAnotaEn, setSeAnotaEn] =  React.useState("");
+  const [alumnoQuePasa, setAlumnoQuePasa] = React.useState(alumno[1]._id);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClickGuardar = async (data) => {
+    console.log(data, alumnoQuePasa);
+      axios
+        .patch("http://localhost:8000/alumnos/pasardeanio/"+alumnoQuePasa, 
+          {
+            curso: data.seAnotaEn,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then((response) => {
+          console.log("PSARRRR", response);
+        
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+  }
+    
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/cursos/pasar/" + alumno[1]._id, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+       console.log("@@@@:",response);
+       setCursosDisponibles(response.data)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+
+  return (
+    <>
+      {alumno[0].pasaDeAnio ? (
+        <Button variant="contained" size="small" color="primary" onClick={handleClickOpen}>
+          Pasar
+        </Button>
+      ) : (
+        alumno.pasaDeAnio
+      )}
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Pasa de año: {alumno[1].alumno.apellido}, {alumno[1].alumno.nombre} </DialogTitle>
+        <DialogContent>
+          <DialogContentText>Elija el curso dónde se inscribe:</DialogContentText>
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "25ch" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <div>
+              <TextField
+                id="seAnotaEn"
+                select
+                label="Curso disponibles"
+                defaultValue={seAnotaEn}
+                SelectProps={{
+                  native: true,
+                }}
+                variant="filled"
+                onChange={(e) => {
+                  setSeAnotaEn(e.target.value);
+                }}
+                {...register("seAnotaEn", {
+                  required: "El género es requerido",
+                })}
+                aria-invalid={errors.seAnotaEn ? "true" : "false"}
+              >
+                {cursosDisponibles.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.nombre}
+                  </option>
+                ))}
+                {errors.seAnotaEn && <p role="alert">{errors.seAnotaEn?.message}</p>}
+              </TextField>
+              </div>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="secondary" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(handleClickGuardar)}
+          >
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
@@ -600,6 +718,5 @@ function MiDialog({ thisCalificacion, onModificar }) {
     </>
   );
 }
-
 
 export default AlumnosCurso;

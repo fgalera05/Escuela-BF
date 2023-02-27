@@ -66,7 +66,12 @@ async function obtenerAlumnosCursos(req, res, next) {
       const calificaciones = await Calificacion.find({
         alumno: alumnos[i].id,
         curso: cursoData.id,
-      }).populate("materia");
+      }).populate("materia").populate({
+        path: "curso",
+        populate: {
+          path: "anio",
+        },
+      });
 
       if (cursoData.anio.anio === 1 && alumnos[i].primero) {
         pasaDeAnio = true;
@@ -107,6 +112,8 @@ async function obtenerAlumnosCursos(req, res, next) {
     cursoActual.curso.especialidad = cursoData.anio.especialidad;
     cursoActual.curso.materias = cursoData.anio.materias;
 
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~:",cursoActual);
+
     res.status(200).json(cursoActual);
   } catch (err) {
     next(err);
@@ -120,7 +127,7 @@ async function obtenerCantidadAlumnosCursoPorId(req, res, next) {
     const cursoData = await Curso.findById(curso)
 
     const alumnos = await Alumno.find({ curso: cursoData.id });
-    
+
     res.status(200).json(alumnos.length);
   } catch (err) {
     next(err);
@@ -194,11 +201,30 @@ async function obtenerCursoPorId(req, res, next) {
 
 }
 
+async function cursoAlQuePasa (req, res, next) {
+  const idAlumno = req.params.alumno
+  console.log("entra?", req.params.alumno);
+  try {
+
+    const alumno = await Alumno.findById(idAlumno).populate('anio')
+    console.log("~~~~~~ALLLL~~~:", alumno.anio.anio);
+    const cursos = await Curso.find().populate('anio')
+
+    const filtrados = cursos.filter (c => (
+      ((c.anio.anio  > alumno.anio.anio) && ( c.anio.anio  < (alumno.anio.anio + 2)) )
+    ))
+    res.status(200).json(filtrados);
+  } catch (err) {
+    next(err);
+  }
+
+}
 
 module.exports = {
   obtenerCursos,
   obtenerCursoPorId,
   obtenerAlumnosCursos,
   crearCurso,
-  obtenerCantidadAlumnosCursoPorId
+  obtenerCantidadAlumnosCursoPorId,
+  cursoAlQuePasa
 };

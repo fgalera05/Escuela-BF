@@ -83,7 +83,7 @@ async function calificarAlumno(req, res, next) {
     calificacion.notas.primerCuatrimestre = miCalificacion.primerCuatrimestre,
       calificacion.notas.segundoCuatrimestre = miCalificacion.segundoCuatrimestre,
       calificacion.notas.tercerCuatrimestre = miCalificacion.tercerCuatrimestre;
-      console.log("~~~~~~~~~~~~~~~~~~~~~~~~:", (parseInt(miCalificacion.primerCuatrimestre) >0 && parseFloat(miCalificacion.segundoCuatrimestre) > 0 && parseFloat(miCalificacion.tercerCuatrimestre) >0));
+     // console.log("~~~~~~~~~~~~~~~~~~~~~~~~:", (parseInt(miCalificacion.primerCuatrimestre) >0 && parseFloat(miCalificacion.segundoCuatrimestre) > 0 && parseFloat(miCalificacion.tercerCuatrimestre) >0));
       if (parseInt(miCalificacion.primerCuatrimestre) >0 && parseFloat(miCalificacion.segundoCuatrimestre) >0 && parseFloat(miCalificacion.tercerCuatrimestre)>0){
         calificacion.notas.promedio = ((parseFloat(miCalificacion.primerCuatrimestre) + parseFloat(miCalificacion.segundoCuatrimestre) + parseFloat(miCalificacion.tercerCuatrimestre)) / 3).toFixed(1);
       }else{
@@ -126,11 +126,16 @@ async function calificarAlumno(req, res, next) {
     await calificacion.save()
 
     //Me fijo si pasa de año
-    const alumno = await Alumno.findById(calificacion.alumno.id).populate('anio');
+    const alumno = await Alumno.findById(calificacion.alumno.id).populate('anio').populate('curso');
 
     // Si aprobó todas - 2 + las previas <= 2 previas, entonces pasa!
     const todasLasPrevias = await Calificacion.find({ alumno: calificacion.alumno, aprobada: false }).populate('curso').populate('alumno');
-
+    const misPrevias = todasLasPrevias.filter(p =>(
+      (p.curso.id != alumno.curso.id)
+    ));
+    misPrevias.forEach(p => (
+      console.log(p.curso.id, alumno.curso._id)
+    ))
     if (todasLasPrevias.length + alumno.previas <= previas) {
       if (alumno.anio.anio === 1) {
         alumno.primero = true
@@ -169,9 +174,10 @@ async function calificarAlumno(req, res, next) {
       if (alumno.anio.anio === 6) {
         alumno.sexto = false
       }
+      alumno.previas = misPrevias.length
     }
     await alumno.save()
-    console.log("la respuesta es:", calificacion);
+    console.log("-------------------------------la respuesta es:", misPrevias.length);
     res.status(200).json(calificacion)
   } catch (err) {
     next(err)
@@ -192,7 +198,7 @@ async function obtenerCalificacionesPorCurso(req, res, next) {
     // }
 
     res.status(200).json(calificaciones)
-    console.log(calificaciones);
+    // console.log(calificaciones);
   } catch (err) {
     next(err)
   }
@@ -214,7 +220,38 @@ async function obtenerCalificacionesPorCursoPorId(req, res, next) {
     // }
 
     res.status(200).json(calificaciones)
-    console.log(calificaciones);
+    // console.log(calificaciones);
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function obtenerCalificacionesHistorialPorId(req, res, next) {
+  
+  const idAlumno = req.params.id
+
+  try {
+
+    const alumno = await Alumno.findById(idAlumno).populate('curso');
+
+    console.log("#########", alumno.curso.id);
+
+    const calificaciones = await Calificacion.find({alumno: alumno}).populate('curso').populate('materia').populate('alumno')
+    const filtro = calificaciones.filter((c) => (
+      (c.curso._id != alumno.curso.id)
+    ))
+    // const calificacion = {
+    //   curso: calif.curso,
+    //   calificaciones: calificaciones.map(calif => [
+    //     calif.materia,
+    //     calif.notas,
+    //     calif.aprobada],
+    //   )
+    // }
+    // console.log("RES", filtro);
+
+    res.status(200).json(filtro);
+    // console.log(calificaciones);
   } catch (err) {
     next(err)
   }
@@ -226,4 +263,5 @@ module.exports = {
   obtenerCalificacionesPorCursoMateria,
   calificarAlumno,
   obtenerCalificacionesPorCurso,
+  obtenerCalificacionesHistorialPorId,
 }

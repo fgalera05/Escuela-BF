@@ -780,9 +780,6 @@ function AnioCard() {
       </CardContent>
       <CardActions>
         <Stack spacing={1}>
-          {/* <Button variant="contained" size="small">
-            Nuevo año
-          </Button> */}
           <Button variant="contained" size="small" onClick={handleClickOpen}>
             Ver años
           </Button>

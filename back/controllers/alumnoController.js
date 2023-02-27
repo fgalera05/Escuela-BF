@@ -472,9 +472,12 @@ async function modificarInscripcionAlumno(req, res, next) {
 async function pasarDeAnioAlumno(req, res, next) {
     let egresa = null;
     let cursoProxAnio;
+    const idAlumno = req.params.id
+    const idCursoNuevo = req.body.curso
+
     try {
-        const alumno = await Alumno.findById(req.params.id).populate('genero').populate('curso').populate('anio').populate('especialidad')
-        // console.log('---------------------ALUMNO:', alumno);
+        const alumno = await Alumno.findById(idAlumno).populate('genero').populate('curso').populate('anio').populate('especialidad')
+        console.log('---------------------ALUMNO:', alumno);
 
         let pasaDeAnio = false;
    
@@ -503,40 +506,37 @@ async function pasarDeAnioAlumno(req, res, next) {
         }
 
 
-        const anioNuevo = alumno.anio.anio + 1
+        const cursoProxAnio = await Curso.findById(idCursoNuevo).populate('anio')
 
-        if (anioNuevo > 7){
-            logger.debug('El alumno es egresado')
-            return res.status(500).json('El alumno es egresado')
-        }
 
-        // console.log('---------------------ANIO:', anioNuevo);
-        if (anioNuevo < 6){
-            const cursos = await Curso.find().populate('anio')
-            // console.log('---------------------CURSOS', cursos);
-            cursoProxAnio = cursos.filter(curso => (curso.anio.anio === anioNuevo));
-            // console.log('---------------------CURSOS:', cursoProxAnio);
-        }else{
-            cursoProxAnio = null
-            egresa = await Anio.findOne({anio: anioNuevo});
+        if (cursoProxAnio.anio.anio > 6){
+            egresa = await Anio.findOne({anio: 7});
         }
+            
+        //     // console.log('---------------------CURSOS', cursos);
+        //     // cursoProxAnio = cursos.filter(curso => (curso.anio.anio === anioNuevo));
+        //     // console.log('---------------------CURSOS:', cursoProxAnio);
+        // }else{
+        //     cursoProxAnio = null
+        //     egresa = await Anio.findOne({anio: anioNuevo});
+        // }
     
 
         // calculo las previas:
         const previas = await Calificacion.find({ alumno: alumno.id, aprobada: false })
         if (cursoProxAnio){
-            alumno.curso = cursoProxAnio[0];
+            alumno.curso = cursoProxAnio;
         }
-        alumno.anio = cursoProxAnio ? cursoProxAnio[0].anio : egresa;
+        alumno.anio = cursoProxAnio ? cursoProxAnio.anio : egresa;
         alumno.previas = previas.length
-        alumno.especialidad =  cursoProxAnio ? cursoProxAnio[0].anio.especialidad: alumno.especialidad
+        alumno.especialidad =  cursoProxAnio ? cursoProxAnio.anio.especialidad: alumno.especialidad
 
         await alumno.save()
         if (!egresa){
-            cursoProxAnio[0].anio.materias.forEach(async element =>
+            cursoProxAnio.anio.materias.forEach(async element =>
                 await Calificacion.create(
                     {
-                        curso: cursoProxAnio[0],
+                        curso: cursoProxAnio,
                         alumno: alumno,
                         materia: element,
                         notas: {
