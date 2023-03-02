@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import NavBar from "../componentes/NavBar";
+import NavBar from "../componentes/Comun/NavBar";
 
 function Calificaciones() {
   const { curso } = useParams();

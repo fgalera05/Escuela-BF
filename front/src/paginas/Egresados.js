@@ -1,4 +1,6 @@
-import NavBar from "../componentes/NavBar";
+import React from 'react'
+
+import NavBar from "../componentes/Comun/NavBar";
 import Card from "@mui/material/Card";
 import { Alert, CardHeader, Collapse, Divider, Snackbar } from "@mui/material";
 import { Grid, Button, Container, Stack, Typography } from "@mui/material";
@@ -8,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 
-import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -17,6 +18,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
+import EditarAlumno from "../componentes/Alumnos/EditarAlumno";
 
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -44,243 +46,6 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-
-function BasicDatePicker(props) {
-  const [value, setValue] = React.useState(props.fecha);
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DatePicker
-        label="Fecha de nacimiento"
-        value={value}
-        onChange={(newValue) => {
-          setValue(newValue);
-          props.setFechaDeNacimiento(newValue.$d);
-        }}
-        renderInput={(params) => <TextField {...params} />}
-        inputFormat="DD/MM/YYYY"
-      />
-    </LocalizationProvider>
-  );
-}
-
-function MiDialog({ thisAlumno, thisGeneros, onModificar }) {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    required,
-  } = useForm();
-  const [open, setOpen] = React.useState(false);
-  const alumno = thisAlumno;
-
-  const [generos, setGeneros] = React.useState(thisGeneros);
-
-  const [apellido, setApellido] = React.useState(thisAlumno.alumno.apellido);
-  const [nombre, setNombre] = React.useState(thisAlumno.alumno.nombre);
-  const [direccion, setDireccion] = React.useState(thisAlumno.alumno.direccion);
-  const [email, setEmail] = React.useState(thisAlumno.alumno.email);
-  const [telefono, setTelefono] = React.useState(thisAlumno.alumno.telefono);
-  const [fechaDeNacimiento, setFechaDeNacimiento] = React.useState(
-    thisAlumno.fechaDeNacimiento
-  );
-  const [genero, setGenero] = React.useState(thisAlumno.genero);
-  const [dni, setDni] = React.useState(thisAlumno.dni);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClickGuardar = (data) => {
-    console.log(data);
-    onModificar(
-      alumno._id,
-      apellido,
-      nombre,
-      genero,
-      dni,
-      data.email,
-      fechaDeNacimiento,
-      telefono,
-      direccion
-    );
-
-    console.log(fechaDeNacimiento);
-    setOpen(false);
-  };
-
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/generos", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        setGeneros(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
-  return (
-    <>
-      <IconButton
-        color="primary"
-        aria-label="edit"
-        component="label"
-        onClick={handleClickOpen}
-      >
-        <EditIcon />
-      </IconButton>
-
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle></DialogTitle>
-        <DialogContent>
-          <DialogContentText>Editar alumno</DialogContentText>
-
-          <Box
-            component="form"
-            sx={{
-              "& .MuiTextField-root": { m: 1, width: "25ch" },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <div>
-              <TextField
-                required
-                id="apellido"
-                label="Apellidos"
-                defaultValue={apellido}
-                onChange={(e) => {
-                  setApellido(e.target.value);
-                }}
-              />
-              <TextField
-                required
-                id="nombre"
-                label="Nombres"
-                defaultValue={nombre}
-                onChange={(e) => {
-                  setNombre(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <TextField
-                id="Género"
-                select
-                label="Género"
-                defaultValue={genero._id}
-                SelectProps={{
-                  native: true,
-                }}
-                variant="filled"
-                onChange={(e) => {
-                  setGenero(e.target.value);
-                }}
-              >
-                {generos.map((option) => (
-                  <option key={option._id} value={option._id}>
-                    {option.genero}
-                  </option>
-                ))}
-              </TextField>
-              <TextField
-                required
-                id="dni"
-                label="DNI"
-                defaultValue={dni}
-                onChange={(e) => {
-                  setDni(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <TextField
-                required
-                id="direccion"
-                label="Dirección"
-                defaultValue={alumno.direccion}
-                onChange={(e) => {
-                  setDireccion(e.target.value);
-                }}
-              />
-              <TextField
-                required
-                id="email"
-                label="email"
-                defaultValue={alumno.email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                {...register("email", {
-                  required: "Email Address is required",
-                })}
-                aria-invalid={errors.email ? "true" : "false"}
-              />
-              {errors.email && <p role="alert">{errors.email?.message}</p>}
-              <TextField
-                required
-                id="telefono"
-                label="Teléfono"
-                defaultValue={alumno.telefono}
-                onChange={(e) => {
-                  setTelefono(e.target.value);
-                }}
-              />
-              <BasicDatePicker
-                fecha={alumno.fechaDeNacimiento}
-                setFechaDeNacimiento={setFechaDeNacimiento}
-              />
-              <TextField
-                disabled
-                id="anio"
-                label="Año"
-                defaultValue={alumno.anio.anio}
-                variant="standard"
-              />
-              <TextField
-                disabled
-                id="especialidad"
-                label="Especialdiad"
-                defaultValue={alumno.especialidad.especialidad}
-                variant="standard"
-              />
-              <TextField
-                disabled
-                id="curso"
-                label="curso"
-                defaultValue={alumno.curso.nombre}
-                variant="standard"
-              />
-            </div>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit(handleClickGuardar)}
-          >
-            Guardar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
-  );
-}
 
 function Boletin({ thisAlumno, thisCurso, onModificar, update}) {
   const {
@@ -679,7 +444,7 @@ function MiDialogEditarBoletin({ thisCalificacion, onModificar }) {
   );
 }
 
-function Alumnos() {
+function Egresados() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [alumnos, setAlumnos] = useState([]);
@@ -848,18 +613,18 @@ function Alumnos() {
                       {alumno.previas == "0" ? " " : alumno.previas}
                     </TableCell>
                     <TableCell align="center">
-                      <Boletin
+                      {/* <Boletin
                         thisAlumno={alumno}
                         thisCurso={alumno.curso}
                         onModificar={onModificar}
                         update={update}
-                      />
+                      /> */}
                     </TableCell>
                     <TableCell>
                       <Historial alumno={alumno} onModificar={onModificar} update={update}/>
                     </TableCell>
                     <TableCell align="center">
-                      <MiDialog
+                      <EditarAlumno
                         thisAlumno={alumno}
                         thisGeneros={generos}
                         onModificar={onModificar}
@@ -878,7 +643,7 @@ function Alumnos() {
           a
         >
           <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-            No hay alumnos inscriptos!
+            No hay egresados!
           </Alert>
         </Snackbar>
       </Container>
@@ -932,15 +697,11 @@ function Historial({ alumno, update }) {
       </IconButton>
       <Dialog open={open} onClose={handleClose} maxWidth="string">
         <DialogTitle>
-          <Typography>Boletines Anteriores:</Typography>
+          <Typography>Calificaciones anteriores:</Typography>
         </DialogTitle>
         <DialogContent>
           <TableContainer component={Paper}>
-            <Table aria-label="collapsible table">
-              <TableBody>
-                <RowAnio alumno={alumno} historia={historia} />
-              </TableBody>
-            </Table>
+              <BoletinHistoria calificaciones={historia} />
           </TableContainer>
         </DialogContent>
         <DialogActions>
@@ -963,49 +724,6 @@ function Historial({ alumno, update }) {
   );
 }
 
-function RowAnio({ alumno, historia }) {
-  console.log("ROWWWW", historia)
-  const [open, setOpen] = React.useState(false);
-  const nombre = historia[0].curso.nombre;
-
-  return (
-    <>
-    {historia.length >0 ?
-    <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row"></TableCell>
-        <TableCell align="left">Curso: {nombre}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{
-              "& .MuiTextField-root": { m: 1, width: "100ch" },
-            }}>
-              <Table size="small" aria-label="purchases">
-                <TableBody>
-                  <BoletinHistoria calificaciones={historia} />
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-      </React.Fragment>
-      : " "}
-      </>
-  );
-}
-
 function BoletinHistoria({ calificaciones }) {
   const [calif, setCalif] = React.useState(calificaciones)
   const onModificarBoletinHistoria = (data) => {
@@ -1020,10 +738,12 @@ function BoletinHistoria({ calificaciones }) {
   
   return (
     <>
-      <TableContainer component={Paper}>
+    <React.Fragment>
+   
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
+              <TableCell>Año</TableCell>
               <TableCell>Materia</TableCell>
               <TableCell>Primer cuatrimestre</TableCell>
               <TableCell>Segundo cuatrimestre</TableCell>
@@ -1037,9 +757,10 @@ function BoletinHistoria({ calificaciones }) {
           </TableHead>
           <TableBody>
             {calif
-              .sort((c, d) => (c.materia.materia < d.materia.materia ? -1 : 1))
+              .sort((c, d) => (c.curso.anio.anio < d.curso.anio.anio ? -1 : 1))
               .map((c, i) => (
                 <TableRow key={c._id}>
+                  <TableCell>{c.curso.anio.nombre}</TableCell>
                   <TableCell>{c.materia.materia}</TableCell>
                   <TableCell align="center">
                     {c.notas.primerCuatrimestre > 0
@@ -1078,8 +799,9 @@ function BoletinHistoria({ calificaciones }) {
               ))}
           </TableBody>
         </Table>
-      </TableContainer>
-    </>
+   
+      </React.Fragment>
+      </>
   );
 }
 
@@ -1318,4 +1040,5 @@ function MiDialogEditarBoletinHistoria({ thisCalificacion, onModificar }) {
   );
 }
 
-export default Alumnos;
+
+export default Egresados;

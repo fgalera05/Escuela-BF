@@ -96,15 +96,15 @@ async function crearAlumno(alumno) {
           alumno: nuevoAlumno,
           materia: element,
           notas: {
-            primerCuatrimestre: 0,
-            segundoCuatrimestre: 0,
-            tercerCuatrimestre: 0,
+            primerCuatrimestre: 7,
+            segundoCuatrimestre: 7,
+            tercerCuatrimestre: 7,
             promedio: 0,
             diciembre: 0,
             marzo: 0,
-            notaFinal: 0,
+            notaFinal: 7,
           },
-          aprobada: false
+          aprobada: true
         }
       ))
 
@@ -148,7 +148,7 @@ async function crearAlumno(alumno) {
            console.log("4444444");
         }
         // cursosAnteriores.forEach(c => console.log(c))
-        console.log("*****#*#*#*#*#*#**#&#^^$&@#@:", cursosPrevios); 
+        // console.log("*****#*#*#*#*#*#**#&#^^$&@#@:", cursosPrevios); 
         
         cursosPrevios.forEach(c => (
             c.anio.materias.forEach(async element =>
@@ -158,18 +158,24 @@ async function crearAlumno(alumno) {
                         alumno: nuevoAlumno,
                         materia: element,
                         notas: {
-                            primerCuatrimestre: 0,
-                            segundoCuatrimestre: 0,
-                            tercerCuatrimestre: 0,
+                            primerCuatrimestre: 7,
+                            segundoCuatrimestre: 7,
+                            tercerCuatrimestre: 7,
                             promedio: 0,
                             diciembre: 0,
                             marzo: 0,
-                            notaFinal: 0,
+                            notaFinal: 7,
                         },
-                        aprobada: false
+                        aprobada: true
                     }
                 )))
         )}
+
+
+        // // const previas = await Calificacion.find({aprobada: false, alumno: nuevoAlumno})
+        // // console.log("previas", previas);
+        // // nuevoAlumno.previas = previas.length
+        // await nuevoAlumno.save()
 
 
 

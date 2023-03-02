@@ -89,14 +89,13 @@ const alumno6 = {
     genero: mongoose.Types.ObjectId('000000000000000000000005'),
     especialidad: mongoose.Types.ObjectId('000000000000000000000002'),
     curso: mongoose.Types.ObjectId('000000000000000000000132'),
-    //: mongoose.Types.ObjectId('000000000000000000000118'),
-    previas: 2
+    //: mongoose.Types.ObjectId('000000000000000000000118')
 }
 
 exports.alumno1 = alumno1
 exports.alumno2 = alumno2
 exports.alumno3 = alumno3
-exports.alumno3b = alumno3b
-exports.alumno4 = alumno4
-exports.alumno5 = alumno5
-exports.alumno6 = alumno6
+// exports.alumno3b = alumno3b
+// exports.alumno4 = alumno4
+// exports.alumno5 = alumno5
+// exports.alumno6 = alumno6

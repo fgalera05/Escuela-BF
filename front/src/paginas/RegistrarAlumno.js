@@ -1,4 +1,4 @@
-import NavBar from "../componentes/NavBar";
+import NavBar from "../componentes/Comun/NavBar";
 import { useForm } from "react-hook-form";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

@@ -76,6 +76,13 @@ async function calificarAlumno(req, res, next) {
   try {
     // Califico al alumno
     const calificacion = await Calificacion.findById(miCalificacion.idCalificacion).populate('curso').populate('alumno').populate('materia')
+    .populate({
+      path: "curso",
+      populate: {
+        path: "anio",
+      },
+    });
+    
     if (!calificacion) {
       logger.debug('No existe calificación!')
       return res.status(404).json('No existe calificación!')
@@ -237,6 +244,13 @@ async function obtenerCalificacionesHistorialPorId(req, res, next) {
     console.log("#########", alumno.curso.id);
 
     const calificaciones = await Calificacion.find({alumno: alumno}).populate('curso').populate('materia').populate('alumno')
+    .populate({
+      path: "curso",
+      populate: {
+        path: "anio",
+      },
+    });
+
     const filtro = calificaciones.filter((c) => (
       (c.curso._id != alumno.curso.id)
     ))

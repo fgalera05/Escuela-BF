@@ -163,12 +163,11 @@ async function crearAlumno(req, res, next) {
     fechaDeNacimiento: req.body.fechaDeNacimiento,
     genero: req.body.genero,
     telefono: req.body.telefono,
-    // especialidad: req.body.especialidad,
     anio: req.body.anio,
     curso: req.body.curso,
     previas: req.body.previas ? req.body.previas : 0,
   };
-  console.log("NUEVO ALUMNO:", alumno);
+
   try {
     const existeAlumno = await Alumno.findOne({ dni: alumno.dni });
 
@@ -176,13 +175,6 @@ async function crearAlumno(req, res, next) {
       logger.debug(`El dni ya existe`);
       return res.status(400).json("El dni ya existe");
     }
-
-    // const existeEspecialidad = await Especialidad.findById(alumno.especialidad)
-
-    // if (!existeEspecialidad) {
-    //     logger.debug(`La especialidad no existe`)
-    //     return res.status(404).json('La especialidad no existe')
-    // }
 
     const existeGenero = await Genero.findById(alumno.genero);
     if (!existeGenero) {
@@ -203,19 +195,6 @@ async function crearAlumno(req, res, next) {
       logger.error("El curso no existe");
       return res.status(404).json("El curso no existe");
     }
-
-    // const cuposTomadosCurso = await Alumno').find({curso: existeCurso.id})
-
-    // if (existeCurso.cantidadAlumnos < cuposTomadosCurso.length ){
-    //   logger.error('El curso no tiene cupo')
-    //   return res.status(500).json('El curso no tiene cupo')
-    // }
-
-    // const existeTurno = await Turno.findById(alumno.turno)
-    // if (!existeTurno) {
-    //     logger.error('El turno no existe')
-    //     return res.status(404).json('El turno no existe')
-    // }
 
     const existeAnio = await Anio.findById(alumno.anio);
     if (!existeAnio) {
@@ -317,36 +296,42 @@ async function crearAlumno(req, res, next) {
           path: "materias",
         },
       });
+
+    let cursosPrevios = [];
+
     if (existeCurso.anio.anio > 1) {
-      const cursosFiltrados = cursosAnteriores.filter(
-        (c) =>
-          c.anio.especialidad.id === existeCurso.anio.especialidad.id ||
-          c.anio.anio <= 2
+        const filtrados = cursosAnteriores.filter(
+            (c) =>
+              c.anio.especialidad.especialidad ===
+              existeCurso.anio.especialidad.especialidad
+          )
+      console.log(
+        "cursosFIltrados ",
+        filtrados
       );
-      console.log("*****#*#*#*#*#*#**#&#^^$&@#@:", cursosFiltrados);
+      console.log(
+        "cursosAnteriores ",
+        cursosAnteriores
+      );
 
-      let cursosPrevios = [];
-
-      if (cursosFiltrados.length == 2) {
-        cursosPrevios = cursosFiltrados[0];
+      if (existeCurso.anio.anio == 2) {
+        cursosPrevios = [cursosAnteriores[0]]
       }
-      if (cursosFiltrados.length > 4) {
-        cursosPrevios = [
-          cursosFiltrados[0],
-          cursosFiltrados[2],
-          ...cursosFiltrados.slice(4),
-        ];
+      if (existeCurso.anio.anio == 3) {
+        cursosPrevios = [cursosAnteriores[0],cursosAnteriores[2]]
       }
-      // cursosAnteriores.forEach(c => console.log(c))
-      console.log("*****#*#*#*#*#*#**#&#^^$&@#@:", cursosPrevios);
-
-      cursosPrevios.forEach((c) =>
-        c.anio.materias.forEach(
+      if (existeCurso.anio.anio > 3) {
+        cursosPrevios = [cursosAnteriores[0],cursosAnteriores[2],...filtrados]
+      }
+      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")  
+        cursosPrevios.forEach(async (c,i) =>
+        // console.log("CURSOS PREVSIOSSSSS!!!: ", i,c)
+        await c.anio.materias.forEach(
           async (element) =>
-            await Calificacion.create({
+             await Calificacion.create({
               curso: c,
-              alumno: nuevoAlumno,
-              materia: element,
+              alumno: nuevoAlumno.id,
+              materia: element.id,
               notas: {
                 primerCuatrimestre: 0,
                 segundoCuatrimestre: 0,
@@ -362,6 +347,7 @@ async function crearAlumno(req, res, next) {
       );
     }
 
+    
     res.status(200).json(nuevoAlumno);
   } catch (err) {
     next(err);
@@ -483,10 +469,6 @@ async function modificarInscripcionAlumno(req, res, next) {
         );
     }
 
-    // Si cambia de curso!!!!!!
-    // console.log('mismo anio:', existeCurso.anio.anio,alumnoToUpdate.anio.anio);
-    // console.log(existeCurso.id,alumnoToUpdate.id);
-    // console.log('a borrar: ', alumnoToUpdate.curso.id, alumnoToUpdate.id);
     if (existeCurso.anio.anio != alumnoToUpdate.anio.anio) {
       await Calificacion.deleteMany({
         curso: alumnoToUpdate.curso.id,
@@ -612,14 +594,6 @@ async function pasarDeAnioAlumno(req, res, next) {
     if (cursoProxAnio.anio.anio > 6) {
       egresa = await Anio.findOne({ anio: 7 });
     }
-
-    //     // console.log('---------------------CURSOS', cursos);
-    //     // cursoProxAnio = cursos.filter(curso => (curso.anio.anio === anioNuevo));
-    //     // console.log('---------------------CURSOS:', cursoProxAnio);
-    // }else{
-    //     cursoProxAnio = null
-    //     egresa = await Anio.findOne({anio: anioNuevo});
-    // }
 
     // calculo las previas:
     const previas = await Calificacion.find({

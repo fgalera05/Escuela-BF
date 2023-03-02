@@ -59,44 +59,48 @@ async function obtenerAlumnosCursos(req, res, next) {
         },
       });
 
-    const alumnos = await Alumno.find({ curso: cursoData.id });
+    const alumnos = await Alumno.find({ curso: cursoData });
 
     for (i = 0; i < alumnos.length; i++) {
       let pasaDeAnio = false;
       const calificaciones = await Calificacion.find({
         alumno: alumnos[i].id,
         curso: cursoData.id,
-      }).populate("materia").populate({
-        path: "curso",
-        populate: {
-          path: "anio",
-        },
-      });
+      })
+        .populate("materia")
+        .populate({
+          path: "curso",
+          populate: {
+            path: "anio",
+          },
+        });
 
-      if (cursoData.anio.anio === 1 && alumnos[i].primero) {
-        pasaDeAnio = true;
-      }
-      if (cursoData.anio.anio === 2 && alumnos[i].segundo) {
-        pasaDeAnio = true;
-      }
-      if (cursoData.anio.anio === 3 && alumnos[i].tercero) {
-        pasaDeAnio = true;
-      }
-      if (cursoData.anio.anio === 4 && alumnos[i].cuarto) {
-        pasaDeAnio = true;
-      }
-      if (cursoData.anio.anio === 5 && alumnos[i].quinto) {
-        pasaDeAnio = true;
-      }
-      const tieneTodasCalificaciones = calificaciones.filter(
-        (element) => element.notas.notaFinal != 0
-      );
+      if (alumnos.length > 0) {
+        if (cursoData.anio.anio === 1 && alumnos[i].primero) {
+          pasaDeAnio = true;
+        }
+        if (cursoData.anio.anio === 2 && alumnos[i].segundo) {
+          pasaDeAnio = true;
+        }
+        if (cursoData.anio.anio === 3 && alumnos[i].tercero) {
+          pasaDeAnio = true;
+        }
+        if (cursoData.anio.anio === 4 && alumnos[i].cuarto) {
+          pasaDeAnio = true;
+        }
+        if (cursoData.anio.anio === 5 && alumnos[i].quinto) {
+          pasaDeAnio = true;
+        }
+        const tieneTodasCalificaciones = calificaciones.filter(
+          (element) => element.notas.notaFinal != 0
+        );
 
-      if (
-        cursoData.anio.anio === 6 &&
-        cursoData.anio.materias.length === tieneTodasCalificaciones.length
-      ) {
-        pasaDeAnio = true;
+        if (
+          cursoData.anio.anio === 6 &&
+          cursoData.anio.materias.length === tieneTodasCalificaciones.length
+        ) {
+          pasaDeAnio = true;
+        }
       }
 
       cursoActual.alumnos.push([
@@ -112,8 +116,6 @@ async function obtenerAlumnosCursos(req, res, next) {
     cursoActual.curso.especialidad = cursoData.anio.especialidad;
     cursoActual.curso.materias = cursoData.anio.materias;
 
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~:",cursoActual);
-
     res.status(200).json(cursoActual);
   } catch (err) {
     next(err);
@@ -124,7 +126,7 @@ async function obtenerCantidadAlumnosCursoPorId(req, res, next) {
   const curso = req.params.id;
 
   try {
-    const cursoData = await Curso.findById(curso)
+    const cursoData = await Curso.findById(curso);
 
     const alumnos = await Alumno.find({ curso: cursoData.id });
 
@@ -143,8 +145,8 @@ async function crearCurso(req, res, next) {
 
     console.log(nuevoCurso);
 
-    const existeCurso = await Curso.findOne({nombre: nuevoCurso.nombre});
-    console.log('existeCurso:', existeCurso);
+    const existeCurso = await Curso.findOne({ nombre: nuevoCurso.nombre });
+    console.log("existeCurso:", existeCurso);
     if (existeCurso) {
       logger.error("El curso ya existe");
       return res.status(404).json("El curso ya existe");
@@ -162,10 +164,9 @@ async function crearCurso(req, res, next) {
       cantidadAlumnos: cantidadDeAlumnosPorCurso,
     });
 
-    res.status(200).json("Curso creado!")
+    res.status(200).json("Curso creado!");
   } catch (err) {
     next(err);
-
   }
 }
 
@@ -187,37 +188,50 @@ async function obtenerCursoPorId(req, res, next) {
           path: "especialidad",
         },
       });
-    
-      if(!existeCurso){
-        logger.error("El curso no existe");
+
+    if (!existeCurso) {
+      logger.error("El curso no existe");
       return res.status(404).json("El curso no existe");
-      }
+    }
 
     return res.status(200).json(existeCurso);
   } catch (err) {
     next(err);
   }
-
-
 }
 
-async function cursoAlQuePasa (req, res, next) {
-  const idAlumno = req.params.alumno
-  console.log("entra?", req.params.alumno);
+async function cursoAlQuePasa(req, res, next) {
+  const idAlumno = req.params.alumno;
   try {
+    const alumno = await Alumno.findById(idAlumno).populate("anio")
+    .populate({
+      path: "anio",
+      populate: {
+        path: "especialidad",
+      },
+    });
+    const cursos = await Curso.find().populate("anio")
+    .populate({
+      path: "anio",
+      populate: {
+        path: "especialidad",
+      },
+    });
 
-    const alumno = await Alumno.findById(idAlumno).populate('anio')
-    console.log("~~~~~~ALLLL~~~:", alumno.anio.anio);
-    const cursos = await Curso.find().populate('anio')
-
-    const filtrados = cursos.filter (c => (
-      ((c.anio.anio  > alumno.anio.anio) && ( c.anio.anio  < (alumno.anio.anio + 2)) )
-    ))
-    res.status(200).json(filtrados);
+    const filtrados = cursos.filter(
+      (c) =>
+        c.anio.anio > alumno.anio.anio && c.anio.anio < alumno.anio.anio + 2
+    );
+    // filtrados.filter(c => console.log(c.anio.especialidad.id === alumno.anio.especialidad.id))
+    if (alumno.anio.anio != 2){
+      res.status(200).json(filtrados.filter(c => c.anio.especialidad.id === alumno.anio.especialidad.id));
+    }else{
+      res.status(200).json(filtrados);
+    }
+    
   } catch (err) {
     next(err);
   }
-
 }
 
 module.exports = {
@@ -226,5 +240,5 @@ module.exports = {
   obtenerAlumnosCursos,
   crearCurso,
   obtenerCantidadAlumnosCursoPorId,
-  cursoAlQuePasa
+  cursoAlQuePasa,
 };
