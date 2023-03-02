@@ -23,7 +23,7 @@ async function obtenerCursos(req, res, next) {
         },
       });
 
-    return res.status(200).json(cursos);
+    return res.status(200).json(cursos.filter(c=>(c.anio.anio < 7)));
   } catch (err) {
     next(err);
   }
@@ -203,6 +203,7 @@ async function obtenerCursoPorId(req, res, next) {
 async function cursoAlQuePasa(req, res, next) {
   const idAlumno = req.params.alumno;
   try {
+
     const alumno = await Alumno.findById(idAlumno).populate("anio")
     .populate({
       path: "anio",
@@ -210,6 +211,7 @@ async function cursoAlQuePasa(req, res, next) {
         path: "especialidad",
       },
     });
+
     const cursos = await Curso.find().populate("anio")
     .populate({
       path: "anio",
@@ -222,8 +224,8 @@ async function cursoAlQuePasa(req, res, next) {
       (c) =>
         c.anio.anio > alumno.anio.anio && c.anio.anio < alumno.anio.anio + 2
     );
-    // filtrados.filter(c => console.log(c.anio.especialidad.id === alumno.anio.especialidad.id))
-    if (alumno.anio.anio != 2){
+   console.log(filtrados)
+    if (alumno.anio.anio != 2 && alumno.anio.anio < 6){
       res.status(200).json(filtrados.filter(c => c.anio.especialidad.id === alumno.anio.especialidad.id));
     }else{
       res.status(200).json(filtrados);

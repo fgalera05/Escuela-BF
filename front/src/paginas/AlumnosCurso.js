@@ -220,7 +220,6 @@ function AlumnosCurso() {
         autoHideDuration={3000}
         onClose={handleClose}
         message="Note archived"
-        a
       >
         <Alert onClose={handleClose} severity="success" sx={{ width: "100%"}}>
           El alumno se asignó al nuevo curso!

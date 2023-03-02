@@ -18,7 +18,7 @@ const {cursos} = require('./data/cursos')
 
 const Alumno = require('../schemas/alumnoSchema')
 // const {alumno1, alumno2, alumno3, alumno3b,alumno4,alumno5,alumno6} = require('./data/alumnos')
-const {alumno1, alumno2,alumno3} = require('./data/alumnos')
+const {alumno1, alumno2,alumno3,alumno6} = require('./data/alumnos')
 const {crearAlumno} = require('./funciones')
 
 const Rol = require('../schemas/rolSchema')
@@ -40,7 +40,7 @@ async function up () {
   // await crearAlumno(alumno3b)
   // await crearAlumno(alumno4)
   // await crearAlumno(alumno5)
-  // await crearAlumno(alumno6)
+  await crearAlumno(alumno6)
   await Rol.collection.insertMany(roles)
   await Usuario.collection.insertMany(usuarios)
 }

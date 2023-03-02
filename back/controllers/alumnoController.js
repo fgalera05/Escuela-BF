@@ -14,7 +14,7 @@ async function obtenerAlumnos(req, res, next) {
       .populate("curso")
       .populate("anio")
       .populate("especialidad");
-    res.status(200).json(alumnos);
+    res.status(200).json(alumnos.filter(a=>a.anio.anio < 7));
   } catch (err) {
     logger.debug(err);
     next(err);
@@ -118,11 +118,8 @@ async function obtenerEgresados(req, res, next) {
       .populate("curso")
       .populate("anio");
     const egresados = alumnos.filter((element) => element.anio.anio > 6);
-    if (egresados.length == 0) {
-      return res.status(200).json("No hay alumnos egresados todavía");
-    } else {
       return res.status(200).json(egresados);
-    }
+  
   } catch (err) {
     next(err);
   }
@@ -305,14 +302,6 @@ async function crearAlumno(req, res, next) {
               c.anio.especialidad.especialidad ===
               existeCurso.anio.especialidad.especialidad
           )
-      console.log(
-        "cursosFIltrados ",
-        filtrados
-      );
-      console.log(
-        "cursosAnteriores ",
-        cursosAnteriores
-      );
 
       if (existeCurso.anio.anio == 2) {
         cursosPrevios = [cursosAnteriores[0]]
@@ -323,9 +312,8 @@ async function crearAlumno(req, res, next) {
       if (existeCurso.anio.anio > 3) {
         cursosPrevios = [cursosAnteriores[0],cursosAnteriores[2],...filtrados]
       }
-      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")  
+      
         cursosPrevios.forEach(async (c,i) =>
-        // console.log("CURSOS PREVSIOSSSSS!!!: ", i,c)
         await c.anio.materias.forEach(
           async (element) =>
              await Calificacion.create({
@@ -600,16 +588,18 @@ async function pasarDeAnioAlumno(req, res, next) {
       alumno: alumno.id,
       aprobada: false,
     });
+
     if (cursoProxAnio) {
       alumno.curso = cursoProxAnio;
     }
     alumno.anio = cursoProxAnio ? cursoProxAnio.anio : egresa;
     alumno.previas = previas.length;
-    alumno.especialidad = cursoProxAnio
+    alumno.especialidad = (cursoProxAnio && !egresa)
       ? cursoProxAnio.anio.especialidad
       : alumno.especialidad;
 
     await alumno.save();
+
     if (!egresa) {
       cursoProxAnio.anio.materias.forEach(
         async (element) =>

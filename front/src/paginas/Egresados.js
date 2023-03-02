@@ -46,6 +46,7 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import Historial from '../componentes/Egresados/Historial';
 
 function Boletin({ thisAlumno, thisCurso, onModificar, update}) {
   const {
@@ -505,13 +506,19 @@ function Egresados() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/alumnos", {
+      .get("http://localhost:8000/alumnos/egresados", {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((response) => {
-        setAlumnos(response.data);
+        console.log(response.data);
+        if(response.data.length ==0){
+            setOpenAlert(true);
+        }else{
+            setAlumnos(response.data);
+        }
+        
       })
       .catch((error) => {
         console.log(error);
@@ -544,25 +551,23 @@ function Egresados() {
     setOpenAlert(false);
   };
 
-  const update = (data) => {
+//   const update = (data) => {
 
-    console.log("WWWWWWW", data);
-
-    if(data){
-      axios
-      .get("http://localhost:8000/alumnos", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        setAlumnos(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    }
-  }
+//     if(data){
+//       axios
+//       .get("http://localhost:8000/alumnos", {
+//         headers: {
+//           Authorization: "Bearer " + token,
+//         },
+//       })
+//       .then((response) => {
+//         setAlumnos(response.data);
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+//     }
+//   }
 
   return (
     <>
@@ -583,11 +588,9 @@ function Egresados() {
               <TableRow>
                 <TableCell>Legajo</TableCell>
                 <TableCell>Apellido y nombre</TableCell>
-                <TableCell align="right">Año</TableCell>
                 <TableCell align="center">Especialidad</TableCell>
                 <TableCell align="center">Curso</TableCell>
                 <TableCell align="center">Previas</TableCell>
-                <TableCell align="center">Boletín</TableCell>
                 <TableCell align="center">Historial</TableCell>
                 <TableCell align="center">Editar</TableCell>
               </TableRow>
@@ -604,7 +607,6 @@ function Egresados() {
                     <TableCell component="th" scope="alumno">
                       {alumno.alumno.apellido}, {alumno.alumno.nombre}
                     </TableCell>
-                    <TableCell align="center">{alumno.anio.anio}</TableCell>
                     <TableCell align="center">
                       {alumno.especialidad.especialidad}
                     </TableCell>
@@ -612,16 +614,8 @@ function Egresados() {
                     <TableCell align="center">
                       {alumno.previas == "0" ? " " : alumno.previas}
                     </TableCell>
-                    <TableCell align="center">
-                      {/* <Boletin
-                        thisAlumno={alumno}
-                        thisCurso={alumno.curso}
-                        onModificar={onModificar}
-                        update={update}
-                      /> */}
-                    </TableCell>
                     <TableCell>
-                      <Historial alumno={alumno} onModificar={onModificar} update={update}/>
+                      <Historial alumno={alumno} onModificar={onModificar} />
                     </TableCell>
                     <TableCell align="center">
                       <EditarAlumno
@@ -651,394 +645,8 @@ function Egresados() {
   );
 }
 
-function Historial({ alumno, update }) {
-  const token = localStorage.getItem("token");
-  const [open, setOpen] = React.useState(false);
-  const [historia, setHistoria] = React.useState([]);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/calificaciones/historial/" + alumno._id, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        console.log("HISTORIAAAAA", response.data);
-        setHistoria(response.data);
-        
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-  
-  const handleClickOpen = () => {
-    console.log("Historia:", alumno);
-    setOpen(true);
-    
-  };
-  const handleClose = () => {
-    setOpen(false);
-    update(true);
-  };
 
-  return (
-    <div>
-      {historia.length> 0 ?
-      <>
-      <IconButton
-        color="secondary"
-        aria-label="edit"
-        component="label"
-        onClick={handleClickOpen}
-      >
-        <HistoryEduIcon />
-      </IconButton>
-      <Dialog open={open} onClose={handleClose} maxWidth="string">
-        <DialogTitle>
-          <Typography>Calificaciones anteriores:</Typography>
-        </DialogTitle>
-        <DialogContent>
-          <TableContainer component={Paper}>
-              <BoletinHistoria calificaciones={historia} />
-          </TableContainer>
-        </DialogContent>
-        <DialogActions>
-          <Box
-          >
-            <Button
-              variant="contained"
-              onClick={handleClose}
-              sx={{ mt: 3, ml: 1 }}
-              color="secondary"
-            >
-              Cerrar
-            </Button>
-          </Box>
-        </DialogActions>
-      </Dialog>
-      </>
-      :" "}
-    </div>
-  );
-}
-
-function BoletinHistoria({ calificaciones }) {
-  const [calif, setCalif] = React.useState(calificaciones)
-  const onModificarBoletinHistoria = (data) => {
-   
-    const filtro = calif.filter( c => (
-      c._id !== data._id
-    ))
-    console.log("DAAAAA",[data,...filtro]);
-
-    setCalif([data,...filtro])
-  }
-  
-  return (
-    <>
-    <React.Fragment>
-   
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Año</TableCell>
-              <TableCell>Materia</TableCell>
-              <TableCell>Primer cuatrimestre</TableCell>
-              <TableCell>Segundo cuatrimestre</TableCell>
-              <TableCell>Tercer cuatrimestre</TableCell>
-              <TableCell>Diciembre</TableCell>
-              <TableCell>Marzo</TableCell>
-              <TableCell>Nota final</TableCell>
-              <TableCell>Aprobada</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {calif
-              .sort((c, d) => (c.curso.anio.anio < d.curso.anio.anio ? -1 : 1))
-              .map((c, i) => (
-                <TableRow key={c._id}>
-                  <TableCell>{c.curso.anio.nombre}</TableCell>
-                  <TableCell>{c.materia.materia}</TableCell>
-                  <TableCell align="center">
-                    {c.notas.primerCuatrimestre > 0
-                      ? c.notas.primerCuatrimestre
-                      : " "}
-                  </TableCell>
-                  <TableCell align="center">
-                    {c.notas.segundoCuatrimestre > 0
-                      ? c.notas.segundoCuatrimestre
-                      : " "}
-                  </TableCell>
-                  <TableCell align="center">
-                    {c.notas.tercerCuatrimestre > 0
-                      ? c.notas.tercerCuatrimestre
-                      : " "}
-                  </TableCell>
-                  <TableCell align="center">
-                    {c.notas.diciembre > 0 ? c.notas.diciembre : " "}
-                  </TableCell>
-                  <TableCell align="center">
-                    {c.notas.marzo > 0 ? c.notas.marzo : " "}
-                  </TableCell>
-                  <TableCell align="center">
-                    {c.notas.notaFinal > 0 ? c.notas.notaFinal : " "}
-                  </TableCell>
-                  <TableCell align="center">
-                    {c.aprobada ? <DoneAllIcon color="primary" /> : ""}
-                  </TableCell>
-                  <TableCell align="center">
-                    <MiDialogEditarBoletinHistoria
-                      thisCalificacion={c}
-                      onModificar={onModificarBoletinHistoria}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-   
-      </React.Fragment>
-      </>
-  );
-}
-
-function MiDialogEditarBoletinHistoria({ thisCalificacion, onModificar }) {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    required,
-  } = useForm();
-  const [open, setOpen] = React.useState(false);
-
-  const [calificacion, setCalificacion] = React.useState(thisCalificacion);
-  const [id, setId] = React.useState(thisCalificacion._id);
-  const [primer, setPrimer] = React.useState(
-    calificacion.notas.primerCuatrimestre
-  );
-  const [segundo, setSegundo] = React.useState(
-    calificacion.notas.segundoCuatrimestre
-  );
-  const [tercer, setTercer] = React.useState(
-    calificacion.notas.tercerCuatrimestre
-  );
-  const [diciembre, setDiciembre] = React.useState(
-    calificacion.notas.diciembre
-  );
-  const [marzo, setMarzo] = React.useState(calificacion.notas.marzo);
-  const [notaFinal, setNotaFinal] = React.useState(
-    calificacion.notas.notaFinal
-  );
-
-  // console.log(calificacion);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClickGuardar = async (data) => {
-    console.log(data);
-    try {
-      console.log(
-        "Received values of form: ",
-        id,
-        primer,
-        segundo,
-        tercer,
-        diciembre,
-        marzo
-      );
-
-      const nueva = await axios.patch(
-        "http://localhost:8000/calificaciones/" + id,
-        {
-          primerCuatrimestre: data.primer,
-          segundoCuatrimestre: data.segundo,
-          tercerCuatrimestre: data.tercer,
-          diciembre: data.diciembre,
-          marzo: data.marzo,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
-      console.log("nuevaaaa", nueva);
-
-      onModificar(nueva.data)
-
-      // onModificar(nueva.data);
-    } catch (err) {
-      console.log(err);
-    }
-
-    setOpen(false);
-  };
-
-  const token = localStorage.getItem("token");
-
-  return (
-    <>
-      <IconButton
-        color="primary"
-        aria-label="edit"
-        component="label"
-        onClick={handleClickOpen}
-      >
-        <EditIcon />
-      </IconButton>
-
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{calificacion.materia.materia} </DialogTitle>
-        <DialogContent>
-          <DialogContentText>Calificaciones: </DialogContentText>
-
-          <Box
-            component="form"
-            sx={{
-              "& .MuiTextField-root": { m: 1, width: "25ch" },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <div>
-              <TextField
-                required
-                id="primer"
-                label="Primer cuatrimestre"
-                defaultValue={primer}
-                onChange={(e) => {
-                  setPrimer(e.target.value);
-                }}
-                type="number"
-                {...register("primer", {
-                  valueAsNumber: true,
-                  pattern: {
-                    value: /^(0|[1-9]\d*)(\.\d+)?$/,
-                  },
-                })}
-                aria-invalid={errors.primer ? "true" : "false"}
-              />
-              {errors.primer && <p role="alert">{errors.primer?.message}</p>}
-            </div>
-            <div>
-              <TextField
-                required
-                id="segundo"
-                label="Segundo cuatrimestre"
-                defaultValue={segundo}
-                onChange={(e) => {
-                  setSegundo(e.target.value);
-                }}
-                type="number"
-                {...register("segundo", {
-                  valueAsNumber: true,
-                  pattern: {
-                    value: /^(0|[1-9]\d*)(\.\d+)?$/,
-                  },
-                })}
-                aria-invalid={errors.segundo ? "true" : "false"}
-              />
-              {errors.segundo && <p role="alert">{errors.segundo?.message}</p>}
-            </div>
-            <div>
-              <TextField
-                required
-                id="tercer"
-                label="Tercer cuatrimestre"
-                defaultValue={tercer}
-                onChange={(e) => {
-                  setTercer(e.target.value);
-                }}
-                type="number"
-                {...register("tercer", {
-                  valueAsNumber: true,
-                  pattern: {
-                    value: /^(0|[1-9]\d*)(\.\d+)?$/,
-                  },
-                })}
-                aria-invalid={errors.tercer ? "true" : "false"}
-              />
-              {errors.tercer && <p role="alert">{errors.tercer?.message}</p>}
-            </div>
-            <div>
-              <TextField
-                required
-                id="diciembre"
-                label="Diciembre"
-                defaultValue={diciembre}
-                onChange={(e) => {
-                  setDiciembre(e.target.value);
-                }}
-                type="number"
-                {...register("diciembre", {
-                  valueAsNumber: true,
-                  pattern: {
-                    value: /^(0|[1-9]\d*)(\.\d+)?$/,
-                  },
-                })}
-                aria-invalid={errors.diciembre ? "true" : "false"}
-              />
-              {errors.diciembre && (
-                <p role="alert">{errors.diciembre?.message}</p>
-              )}
-            </div>
-            <div>
-              <TextField
-                required
-                id="marzo"
-                label="Marzo"
-                defaultValue={marzo}
-                onChange={(e) => {
-                  setMarzo(e.target.value);
-                }}
-                type="number"
-                {...register("marzo", {
-                  valueAsNumber: true,
-                  pattern: {
-                    value: /^(0|[1-9]\d*)(\.\d+)?$/,
-                  },
-                })}
-                aria-invalid={errors.marzo ? "true" : "false"}
-              />
-              {errors.marzo && <p role="alert">{errors.marzo?.message}</p>}
-            </div>
-            <div>
-              <TextField
-                required
-                id="notaFinal"
-                label="Nota Final"
-                defaultValue={notaFinal}
-                type="number"
-                disabled
-              />
-            </div>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit(handleClickGuardar)}
-          >
-            Guardar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
-  );
-}
 
 
 export default Egresados;

@@ -324,6 +324,7 @@ function MiDialogEditarBoletin({ thisCalificacion, onModificar }) {
                 type="number"
                 {...register("primer", {
                   valueAsNumber: true,
+                  validate: (value) => (value >= 0 && value <= 10),
                   pattern: {
                     value: /^(0|[1-9]\d*)(\.\d+)?$/,
                   },
@@ -344,6 +345,7 @@ function MiDialogEditarBoletin({ thisCalificacion, onModificar }) {
                 type="number"
                 {...register("segundo", {
                   valueAsNumber: true,
+                  validate: (value) => (value >= 0 && value <= 10),
                   pattern: {
                     value: /^(0|[1-9]\d*)(\.\d+)?$/,
                   },
@@ -364,6 +366,7 @@ function MiDialogEditarBoletin({ thisCalificacion, onModificar }) {
                 type="number"
                 {...register("tercer", {
                   valueAsNumber: true,
+                  validate: (value) => (value >= 0 && value <= 10),
                   pattern: {
                     value: /^(0|[1-9]\d*)(\.\d+)?$/,
                   },
@@ -384,6 +387,7 @@ function MiDialogEditarBoletin({ thisCalificacion, onModificar }) {
                 type="number"
                 {...register("diciembre", {
                   valueAsNumber: true,
+                  validate: (value) => (value >= 0 && value <= 10),
                   pattern: {
                     value: /^(0|[1-9]\d*)(\.\d+)?$/,
                   },
@@ -406,6 +410,7 @@ function MiDialogEditarBoletin({ thisCalificacion, onModificar }) {
                 type="number"
                 {...register("marzo", {
                   valueAsNumber: true,
+                  validate: (value) => (value >= 0 && value <= 10),
                   pattern: {
                     value: /^(0|[1-9]\d*)(\.\d+)?$/,
                   },

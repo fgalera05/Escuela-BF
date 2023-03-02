@@ -117,8 +117,18 @@ const cursosSextoTC = [
        
     },]
 
+    const egresados = [
+        {
+            _id: new mongoose.Types.ObjectId('000000000000000000000232'),
+            nombre: 'Egresados',
+            anio: new mongoose.Types.ObjectId('000000000000000000000016'),
+            // turno: new mongoose.Types.ObjectId('000000000000000000000119'),
+            cantidadAlumnos: cantidadAlumnos,
+           
+        },]
+
 const cursos = [...cursosPrimero,...cursosSegundo,...cursosTerceroMMO,...cursosTerceroTC,...cursosCuartoMM0
-    ,...cursosCuartoTC,...cursosQuintoMMO,...cursosQuintoTC,...cursosSextoMMO,...cursosSextoTC]
+    ,...cursosCuartoTC,...cursosQuintoMMO,...cursosQuintoTC,...cursosSextoMMO,...cursosSextoTC,...egresados]
 
 exports.cursos = cursos
 // exports.cursosPrimero = cursosPrimero

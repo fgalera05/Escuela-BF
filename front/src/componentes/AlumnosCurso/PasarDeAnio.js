@@ -111,7 +111,7 @@ function PasarDeAnio({alumno, course, pasarDeAnio}) {
                 >
                   {cursosDisponibles.map((c) => (
                     <option key={c._id} value={c._id}>
-                      {c.nombre} - {c.anio.nombre} año 
+                      {c.nombre} - {c.anio.nombre}
                     </option>
                   ))}
                   {errors.seAnotaEn && <p role="alert">{errors.seAnotaEn?.message}</p>}

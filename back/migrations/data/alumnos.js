@@ -98,4 +98,4 @@ exports.alumno3 = alumno3
 // exports.alumno3b = alumno3b
 // exports.alumno4 = alumno4
 // exports.alumno5 = alumno5
-// exports.alumno6 = alumno6
+exports.alumno6 = alumno6
