@@ -3,8 +3,9 @@ import React from 'react'
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import MiDialogEditarBoletinHistoria from './MiDialogEditarBoletinHistoria';
 
-function BoletinHistoria({ calificaciones }) {
+function BoletinHistoria({ calificaciones, actualizar }) {
     const [calif, setCalif] = React.useState(calificaciones)
+
     const onModificarBoletinHistoria = (data) => {
      
       const filtro = calif.filter( c => (
@@ -12,7 +13,9 @@ function BoletinHistoria({ calificaciones }) {
       ))
       console.log("DAAAAA",[data,...filtro]);
   
-      setCalif([data,...filtro])
+      setCalif([data,...filtro]);
+      actualizar(true);
+
     }
     
     return (

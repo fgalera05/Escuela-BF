@@ -125,6 +125,19 @@ async function obtenerEgresados(req, res, next) {
   }
 }
 
+async function obtenerEgresadoPorId(req, res, next) {
+  try {
+    const alumno = await Alumno.findById(req.params.id)
+      .populate("genero")
+      .populate("curso")
+      .populate("anio");
+      return res.status(200).json(alumno);
+  
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function obtenerAlumnoPorId(req, res, next) {
   console.log("obtenerAlumnoPorId with id: ", req.params.id);
 
@@ -657,6 +670,7 @@ module.exports = {
   obtenerAlumnosQuinto,
   obtenerAlumnosSexto,
   obtenerEgresados,
+  obtenerEgresadoPorId,
   crearAlumno,
   modificarAlumno,
   modificarInscripcionAlumno,

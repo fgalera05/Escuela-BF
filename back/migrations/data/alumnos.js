@@ -90,6 +90,13 @@ const alumno6 = {
     especialidad: mongoose.Types.ObjectId('000000000000000000000002'),
     curso: mongoose.Types.ObjectId('000000000000000000000132'),
     //: mongoose.Types.ObjectId('000000000000000000000118')
+    primero: true,
+    segundo:true,
+    tercero: true,
+    cuarto:true,
+    quinto:true,
+    sexto: true,
+    
 }
 
 exports.alumno1 = alumno1

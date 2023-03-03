@@ -105,7 +105,7 @@ function AlumnoCard() {
             <Button variant="contained" onClick={handleVerAlumnos} size="small">
               Buscar alumno
             </Button>
-            <Button variant="contained" onClick={handleVerEgresados} size="small">
+            <Button variant="contained" onClick={handleVerEgresados} size="small" color="secondary">
               Egresados
             </Button>
           </Stack>

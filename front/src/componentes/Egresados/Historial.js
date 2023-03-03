@@ -3,11 +3,13 @@ import axios from 'axios';
 import React, { useEffect } from 'react'
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import BoletinHistoria from './BoletinHistoria';
+import { useDefaultDates } from '@mui/x-date-pickers/internals';
 
 function Historial({ alumno, update }) {
     const token = localStorage.getItem("token");
     const [open, setOpen] = React.useState(false);
     const [historia, setHistoria] = React.useState([]);
+    const [actualizacion, setActualizacion] = React.useState(false);
   
     useEffect(() => {
       axios
@@ -17,7 +19,6 @@ function Historial({ alumno, update }) {
           },
         })
         .then((response) => {
-          console.log("HISTORIAAAAA", response.data);
           setHistoria(response.data);
           
         })
@@ -27,12 +28,38 @@ function Historial({ alumno, update }) {
     }, []);
     
     const handleClickOpen = () => {
-      console.log("Historia:", alumno);
       setOpen(true);
       
     };
+
+    const actualizar = (data) =>{
+      if(data){
+        try {
+          axios
+        .get("http://localhost:8000/calificaciones/historial/" + alumno._id, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+          setHistoria(response.data);
+          setActualizacion(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+        } catch (error) {
+          
+        }
+      
+      }
+    }
+
     const handleClose = () => {
+      update(actualizacion);
       setOpen(false);
+      
+
     };
   
     return (
@@ -40,7 +67,7 @@ function Historial({ alumno, update }) {
         {historia.length> 0 ?
         <>
         <IconButton
-          color="secondary"
+          color="primary"
           aria-label="edit"
           component="label"
           onClick={handleClickOpen}
@@ -53,7 +80,7 @@ function Historial({ alumno, update }) {
           </DialogTitle>
           <DialogContent>
             <TableContainer component={Paper}>
-                <BoletinHistoria calificaciones={historia} />
+                <BoletinHistoria calificaciones={historia} actualizar={actualizar}/>
             </TableContainer>
           </DialogContent>
           <DialogActions>

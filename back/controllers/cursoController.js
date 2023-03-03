@@ -145,7 +145,7 @@ async function crearCurso(req, res, next) {
 
     console.log(nuevoCurso);
 
-    const existeCurso = await Curso.findOne({ nombre: nuevoCurso.nombre });
+    const existeCurso = await Curso.findOne({ nombre: nuevoCurso.curso });
     console.log("existeCurso:", existeCurso);
     if (existeCurso) {
       logger.error("El curso ya existe");

@@ -140,10 +140,11 @@ async function calificarAlumno(req, res, next) {
     const misPrevias = todasLasPrevias.filter(p =>(
       (p.curso.id != alumno.curso.id)
     ));
-    misPrevias.forEach(p => (
-      console.log(p.curso.id, alumno.curso._id)
-    ))
-    if (todasLasPrevias.length + alumno.previas <= previas) {
+      console.log("0000000000",todasLasPrevias.length + alumno.previas <= previas);
+      console.log("todasLasPrevias.length",todasLasPrevias.length );
+      console.log("alumno.previas",alumno.previas );
+      console.log("previas",previas);
+    if (todasLasPrevias.length <= previas) {
       if (alumno.anio.anio === 1) {
         alumno.primero = true
       }
@@ -181,8 +182,15 @@ async function calificarAlumno(req, res, next) {
       if (alumno.anio.anio === 6) {
         alumno.sexto = false
       }
-      alumno.previas = misPrevias.length
+      
+      console.log("*************");
     }
+    alumno.previas = misPrevias.length
+    // if (alumno.anio.anio === 7) {
+    //   alumno.previas = misPrevias.length
+    // }
+    
+
     await alumno.save()
     console.log("-------------------------------la respuesta es:", misPrevias.length);
     res.status(200).json(calificacion)

@@ -9,6 +9,7 @@ const {
     obtenerAlumnosQuinto,
     obtenerAlumnosSexto,
     obtenerEgresados,
+    obtenerEgresadoPorId,
     crearAlumno,
     modificarAlumno,
     modificarInscripcionAlumno,
@@ -28,6 +29,8 @@ router.get('/cuarto', obtenerAlumnosCuarto);
 router.get('/quinto', obtenerAlumnosQuinto);
 router.get('/sexto', obtenerAlumnosSexto);
 router.get('/egresados', obtenerEgresados);
+router.get('/egresado/:id', obtenerEgresadoPorId);
+
 router.get('/alumno/nuevoalumno', nuevoAlumno)
 
 router.post('/', crearAlumno);

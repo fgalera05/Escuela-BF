@@ -4,7 +4,7 @@ import { Alert, CardHeader, Collapse, Divider, Snackbar } from "@mui/material";
 import { Grid, Button, Container, Stack, Typography } from "@mui/material";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -515,6 +515,7 @@ function Alumnos() {
         },
       })
       .then((response) => {
+        console.log("eeeeeee", response.data);
         setAlumnos(response.data);
       })
       .catch((error) => {
@@ -612,7 +613,7 @@ function Alumnos() {
                     <TableCell align="center">
                       {alumno.especialidad.especialidad}
                     </TableCell>
-                    <TableCell align="center">{alumno.curso.nombre}</TableCell>
+                    <TableCell align="center"><Link to={"/curso/alumnos/" + alumno.curso._id} color="primary"> {alumno.curso.nombre}</Link></TableCell>
                     <TableCell align="center">
                       {alumno.previas == "0" ? " " : alumno.previas}
                     </TableCell>
@@ -670,7 +671,7 @@ function Historial({ alumno, update }) {
       .then((response) => {
         console.log("HISTORIAAAAA", response.data);
         setHistoria(response.data);
-        
+        update(true);
       })
       .catch((error) => {
         console.log(error);
@@ -683,8 +684,27 @@ function Historial({ alumno, update }) {
     
   };
   const handleClose = () => {
-    setOpen(false);
-    update(true);
+    try {
+      axios
+      .get("http://localhost:8000/calificaciones/historial/" + alumno._id, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        console.log("HISTORIAAAAA", response.data);
+        setHistoria(response.data);
+        update(true);
+        setOpen(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    } catch (error) {
+      
+    }
+    
+    // update(true);
   };
 
   return (

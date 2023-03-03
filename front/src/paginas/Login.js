@@ -146,7 +146,6 @@ export default function SignInSide() {
               >
                 Ingresar
               </Button>
-
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>

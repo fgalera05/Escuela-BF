@@ -551,23 +551,24 @@ function Egresados() {
     setOpenAlert(false);
   };
 
-//   const update = (data) => {
+  const update = (data) => {
 
-//     if(data){
-//       axios
-//       .get("http://localhost:8000/alumnos", {
-//         headers: {
-//           Authorization: "Bearer " + token,
-//         },
-//       })
-//       .then((response) => {
-//         setAlumnos(response.data);
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//       });
-//     }
-//   }
+    if(data){
+      axios
+      .get("http://localhost:8000/alumnos/egresados", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        console.log("llego>", response.data);
+        setAlumnos(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+  }
 
   return (
     <>
@@ -614,8 +615,8 @@ function Egresados() {
                     <TableCell align="center">
                       {alumno.previas == "0" ? " " : alumno.previas}
                     </TableCell>
-                    <TableCell>
-                      <Historial alumno={alumno} onModificar={onModificar} />
+                    <TableCell align="center">
+                      <Historial alumno={alumno} onModificar={onModificar} update={update}/>
                     </TableCell>
                     <TableCell align="center">
                       <EditarAlumno
@@ -634,7 +635,6 @@ function Egresados() {
           autoHideDuration={3000}
           onClose={handleClose}
           message="Note archived"
-          a
         >
           <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
             No hay egresados!

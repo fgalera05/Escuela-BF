@@ -19,7 +19,7 @@ function CursoCard() {
       required,
       reset,
     } = useForm();
-    const [curso, setCurso] = React.useState(" ");
+    const [curso, setCurso] = React.useState("");
   
     const [sucess, setSucess] = React.useState(false);
     const [msg, setMsg] = React.useState("");
@@ -118,7 +118,6 @@ function CursoCard() {
                 autoHideDuration={3000}
                 onClose={handleClose}
                 message="Note archived"
-                a
               >
                 <Alert
                   onClose={handleClose}
@@ -195,7 +194,7 @@ function CursoCard() {
                 </DialogActions>
               </Dialog>
             )}
-            <Button variant="contained" onClick={handleCursos} size="small">
+            <Button variant="contained" onClick={handleCursos} size="small" color="secondary">
               Ver cursos
             </Button>
           </Stack>
@@ -205,7 +204,6 @@ function CursoCard() {
           autoHideDuration={1000}
           onClose={handleClose}
           message="Note archived"
-          a
         >
           {sucess ? (
             <Alert

@@ -7,6 +7,7 @@ const Anio = require('../schemas/anioSchema');
 const Genero = require('../schemas/generoSchema');
 const Curso = require('../schemas/cursoSchema');
 const Calificacion = require('../schemas/calificacionSchema');
+const { obtenerAlumnosSexto } = require('../controllers/alumnoController');
 
 async function crearAlumno(alumno) {
 
@@ -33,37 +34,37 @@ async function crearAlumno(alumno) {
       console.log('error3')
     }
 
-    let alumnoPrimero = false;
-    let alumnoSegundo = false;
-    let alumnoTercero = false;
-    let alumnoCuarto = false;
-    let alumnoQuinto = false;
+    // let alumnoPrimero = false;
+    // let alumnoSegundo = false;
+    // let alumnoTercero = false;
+    // let alumnoCuarto = false;
+    // let alumnoQuinto = false;
 
-    if (existeCurso.anio.anio === 2) {
-      alumnoPrimero = true;
-    }
-    if (existeCurso.anio.anio === 3) {
-      alumnoPrimero = true;
-      alumnoSegundo = true;
-    }
-    if (existeCurso.anio.anio === 4) {
-      alumnoPrimero = true;
-      alumnoSegundo = true;
-      alumnoTercero = true;
-    }
-    if (existeCurso.anio.anio === 5) {
-      alumnoPrimero = true;
-      alumnoSegundo = true;
-      alumnoTercero = true;
-      alumnoCuarto = true
-    }
-    if (existeCurso.anio.anio === 6) {
-      alumnoPrimero = true;
-      alumnoSegundo = true;
-      alumnoTercero = true;
-      alumnoCuarto = true;
-      alumnoQuinto = true;
-    }
+    // if (existeCurso.anio.anio === 2) {
+    //   alumnoPrimero = true;
+    // }
+    // if (existeCurso.anio.anio === 3) {
+    //   alumnoPrimero = true;
+    //   alumnoSegundo = true;
+    // }
+    // if (existeCurso.anio.anio === 4) {
+    //   alumnoPrimero = true;
+    //   alumnoSegundo = true;
+    //   alumnoTercero = true;
+    // }
+    // if (existeCurso.anio.anio === 5) {
+    //   alumnoPrimero = true;
+    //   alumnoSegundo = true;
+    //   alumnoTercero = true;
+    //   alumnoCuarto = true
+    // }
+    // if (existeCurso.anio.anio === 6) {
+    //   alumnoPrimero = true;
+    //   alumnoSegundo = true;
+    //   alumnoTercero = true;
+    //   alumnoCuarto = true;
+    //   alumnoQuinto = true;
+    // }
 
     const nuevoAlumno = await Alumno.create(
       {
@@ -80,11 +81,12 @@ async function crearAlumno(alumno) {
         anio: existeCurso.anio,
         especialidad: existeCurso.anio.especialidad,
         curso: existeCurso,
-        primero: alumnoPrimero,
-        segundo: alumnoSegundo,
-        tercero: alumnoTercero,
-        cuarto: alumnoCuarto,
-        quinto: alumnoQuinto,
+        primero: alumno.primero,
+        segundo: alumno.segundo,
+        tercero: alumno.tercero,
+        cuarto: alumno.cuarto,
+        quinto: alumno.quinto,
+        sexto: alumno.sexto,
         previas: alumno.previas,
       }
     )

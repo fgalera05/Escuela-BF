@@ -222,7 +222,7 @@ function AlumnosCurso() {
         message="Note archived"
       >
         <Alert onClose={handleClose} severity="success" sx={{ width: "100%"}}>
-          El alumno se asignó al nuevo curso!
+          El alumno se asignó correctamente!
         </Alert>
       </Snackbar>
       
