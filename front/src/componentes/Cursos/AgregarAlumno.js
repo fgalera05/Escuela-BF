@@ -4,6 +4,30 @@ import React from 'react'
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import ValidacionTexto from '../Comun/ValidacionTexto';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+
+function BasicDatePicker(props) {  const [value, setValue] = React.useState(dayjs(Date.today));
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DatePicker
+        label="Fecha de nacimiento"
+        value={value}
+        onChange={(newValue) => {
+          setValue(newValue);
+          props.setFechaDeNacimiento(newValue.$d);
+        }}
+        disableFuture
+        renderInput={(params) => <TextField {...params} />}
+        inputFormat="DD/MM/YYYY"
+      />
+    </LocalizationProvider>
+  );
+}
+
 
 function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
     const [openAgregarDialog, setOpenAgregarDialog] = React.useState(false);
@@ -25,11 +49,14 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
     const [open, setOpen] = React.useState(false);
     const [sucess, setSucess] = React.useState(false);
     const [msg, setMsg] = React.useState(false);
+    const [fechaDeNacimiento, setFechaDeNacimiento] = React.useState("");
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
   
     const handleClose = () => {
       setOpenAgregarDialog(false);
+      setOpen(false);
+      reset();
     };
   
     const handleAgregarAlumno = () => {
@@ -107,7 +134,8 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
               autoComplete="off"
             >
               <div>
-                <TextField
+              <TextField
+                  required
                   id="apellido"
                   label="Apellidos"
                   defaultValue={apellido}
@@ -117,28 +145,30 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
                   }}
                   {...register("apellido", {
                     required: true,
-                    pattern: /^[A-Za-z]+$/i,
+                    pattern: /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/g,
                   })}
                   aria-invalid={errors.apellido ? "true" : "false"}
                 />
-                {apellido.length === 0 && (
-                  <p role="alert">{errors.apellido?.message}</p>
+                {errors.apellido && (
+                   <ValidacionTexto msg={"El apellido puede contener sólo letras."}/>
                 )}
                 <TextField
+                  required
                   id="nombre"
                   label="Nombres"
-                  defaultValue={nombre}
                   type="text"
+                  defaultValue={nombre}
                   onChange={(e) => {
                     setNombre(e.target.value);
                   }}
                   {...register("nombre", {
                     required: true,
+                    pattern: /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/g,
                   })}
                   aria-invalid={errors.nombre ? "true" : "false"}
                 />
-                {nombre.length === 0 && (
-                  <p role="alert">{errors.nombre?.message}</p>
+                {errors.nombre && (
+                   <ValidacionTexto msg={"El nombre puede contener sólo letras."}/>
                 )}
               </div>
               <div>
@@ -200,7 +230,9 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
                   })}
                   aria-invalid={errors.dni ? "true" : "false"}
                 />
-                {dni.length === 0 && <p role="alert">{errors.dni?.message}</p>}
+                {errors.dni && (
+                   <ValidacionTexto msg={"El DNI debe ser de 8 números: xxxxxxxx"}/>
+                )}
               </div>
               <div>
                 <TextField
@@ -216,8 +248,8 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
                   })}
                   aria-invalid={errors.direccion ? "true" : "false"}
                 />
-                {direccion.length === 0 && (
-                  <p role="alert">{errors.direccion?.message}</p>
+                {errors.direccion && (
+                   <ValidacionTexto msg={"Ingrese la dirección del alumno."}/>
                 )}
                 <TextField
                   id="telefono"
@@ -237,6 +269,10 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
                 {telefono.length === 0 && (
                   <p role="alert">{errors.telefono?.message}</p>
                 )}
+                <BasicDatePicker
+                  fecha={fechaDeNacimiento}
+                  setFechaDeNacimiento={setFechaDeNacimiento}
+                />
               </div>
             </Box>
           </DialogContent>
@@ -255,7 +291,7 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
         </Dialog>
         <Snackbar
           open={open}
-          autoHideDuration={3000}
+          autoHideDuration={400}
           onClose={handleClose}
           message="Note archived"
         >

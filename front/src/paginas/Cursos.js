@@ -109,12 +109,13 @@ function Cursos() {
 
 export default Cursos;
 
-function Row({row, ver}) {
+function Row({ row, ver }) {
   const [open, setOpen] = React.useState(false);
   const [openAgregar, setOpenAgregar] = React.useState(false);
   const token = localStorage.getItem("token");
   const [disponible, setDisponible] = React.useState(false);
   const [generos, setGeneros] = React.useState([]);
+  const [anotados, setAnotados] = React.useState(0);
 
   useEffect(() => {
     axios
@@ -124,6 +125,7 @@ function Row({row, ver}) {
         },
       })
       .then((response) => {
+        console.log("antes", response.data);
         setDisponible(response.data);
       })
       .catch((error) => {
@@ -150,10 +152,12 @@ function Row({row, ver}) {
     parseInt(row.cantidadAlumnos) - parseInt(disponible)
       ? parseInt(row.cantidadAlumnos) - parseInt(disponible)
       : 0;
-  
-  const anotados = parseInt(row.cantidadAlumnos)- (parseInt(row.cantidadAlumnos) - parseInt(disponible)
-  ? parseInt(row.cantidadAlumnos) - parseInt(disponible)
-  : 0)
+  console.log(row.cantidadAlumnos);
+  useEffect(() => {
+    setAnotados(
+      parseInt(row.cantidadAlumnos) - parseInt(disponible)
+    );
+  }, []);
 
   return (
     <UserContext.Provider value={row}>
@@ -167,15 +171,19 @@ function Row({row, ver}) {
             {row.anio.especialidad.especialidad}
           </TableCell>
           <TableCell align="center">
-            <VerCurso label="Ver alumnos" course={row} lugares={anotados}/>
+            <VerCurso label="Ver alumnos" course={row} lugares={disponible} />
           </TableCell>
           <TableCell align="center">
-            {lugares>0?<AgregarAlumno
-              openAgregar={open}
-              curso={row}
-              lugar={lugares}
-              generos={generos}
-            />:" "}
+            {lugares > 0 ? (
+              <AgregarAlumno
+                openAgregar={open}
+                curso={row}
+                lugar={lugares}
+                generos={generos}
+              />
+            ) : (
+              " "
+            )}
           </TableCell>
         </TableRow>
       </React.Fragment>

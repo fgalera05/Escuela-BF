@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, TextField } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useForm } from "react-hook-form";
@@ -6,6 +6,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import ValidacionTexto from '../Comun/ValidacionTexto';
+import { IMaskInput } from 'react-imask';
 
 function BasicDatePicker(props) {
     const [value, setValue] = React.useState(props.fecha);
@@ -19,6 +21,7 @@ function BasicDatePicker(props) {
             setValue(newValue);
             props.setFechaDeNacimiento(newValue.$d);
           }}
+          disableFuture
           renderInput={(params) => <TextField {...params} />}
           inputFormat="DD/MM/YYYY"
         />
@@ -26,13 +29,15 @@ function BasicDatePicker(props) {
     );
   }
 
-function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
+function EditarAlumno({ thisAlumno, thisGeneros, onModificar, update}) {
     const {
       register,
       formState: { errors },
       handleSubmit,
       required,
+      reset,
     } = useForm();
+
 
     const [open, setOpen] = React.useState(false);
     const alumno = thisAlumno;
@@ -47,32 +52,65 @@ function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
     const [fechaDeNacimiento, setFechaDeNacimiento] = React.useState(
       thisAlumno.fechaDeNacimiento
     );
+
     const [genero, setGenero] = React.useState(thisAlumno.genero);
-    const [dni, setDni] = React.useState(thisAlumno.dni);
+    const [dni, setDni] = React.useState("");
   
+    useEffect(() => {
+      axios
+        .get("http://localhost:8000/alumnos//alumno/ver/"+thisAlumno._id, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+            console.log("al",response.data.dni)
+            setDni(response.data.dni);
+          
+        })
+        .catch((error) => {
+          console.log("error:",error);
+        });
+    }, []);
+
+
     const handleClose = () => {
       setOpen(false);
     };
   
     const handleClickOpen = () => {
+      axios
+      .get("http://localhost:8000/alumnos//alumno/ver/"+thisAlumno._id, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+          console.log("al",response.data.dni)
+          setDni(response.data.dni);
+        
+      })
+      .catch((error) => {
+        console.log("error:",error);
+      });
       setOpen(true);
     };
   
     const handleClickGuardar = (data) => {
       onModificar(
         alumno._id,
-        apellido,
-        nombre,
+        data.apellido,
+        data.nombre,
         genero,
         data.dni,
         data.email,
         fechaDeNacimiento,
         data.telefono,
-        direccion
+        data.direccion
       );
-  
-      console.log(fechaDeNacimiento);
+      // update(true);
       setOpen(false);
+      reset();
     };
   
     const token = localStorage.getItem("token");
@@ -85,10 +123,11 @@ function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
           },
         })
         .then((response) => {
-          setGeneros(response.data);
+            setGeneros(response.data);
+          
         })
         .catch((error) => {
-          console.log(error);
+          console.log("error:",error);
         });
     }, []);
   
@@ -110,7 +149,7 @@ function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
             <Box
               component="form"
               sx={{
-                "& .MuiTextField-root": { m: 1, width: "25ch" },
+                "& .MuiTextField-root": { m: 1, width: "50ch" },
               }}
               noValidate
               autoComplete="off"
@@ -125,7 +164,15 @@ function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
                   onChange={(e) => {
                     setApellido(e.target.value);
                   }}
+                  {...register("apellido", {
+                    required: true,
+                    pattern: /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/g,
+                  })}
+                  aria-invalid={errors.apellido ? "true" : "false"}
                 />
+                {errors.apellido && (
+                   <ValidacionTexto msg={"El apellido puede contener sólo letras."}/>
+                )}
                 <TextField
                   required
                   id="nombre"
@@ -135,7 +182,16 @@ function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
                   onChange={(e) => {
                     setNombre(e.target.value);
                   }}
+                  {...register("nombre", {
+                    required: true,
+                    pattern: /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/g,
+                  })}
+                  aria-invalid={errors.nombre ? "true" : "false"}
                 />
+                {errors.nombre && (
+                   <ValidacionTexto msg={"El nombre puede contener sólo letras."}/>
+                )}
+
               </div>
               <div>
                 <TextField
@@ -172,7 +228,9 @@ function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
                   })}
                   aria-invalid={errors.dni ? "true" : "false"}
                 />
-                {dni.length === 0 && <p role="alert">{errors.dni?.message}</p>}
+                {errors.dni && (
+                   <ValidacionTexto msg={"El DNI debe ser de 8 números: xxxxxxxx"}/>
+                )}
               </div>
               <div>
                 <TextField
@@ -184,11 +242,19 @@ function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
                   onChange={(e) => {
                     setDireccion(e.target.value);
                   }}
+                  {...register("direccion", {
+                    required: true,
+                    // pattern: /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/g,
+                  })}
+                  aria-invalid={errors.direccion ? "true" : "false"}
                 />
+                {errors.direccion && (
+                   <ValidacionTexto msg={"Ingrese la dirección del alumno."}/>
+                )}
                 <TextField
                   required
                   id="email"
-                  label="email"
+                  label="Email"
                   defaultValue={alumno.email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -198,22 +264,29 @@ function EditarAlumno({ thisAlumno, thisGeneros, onModificar }) {
                 })}
                   aria-invalid={errors.email ? "true" : "false"}
                 />
-                {errors.email && <p role="alert">{errors.email?.message}</p>}
+                {errors.email && (
+                  <Typography variant="caption" display="block" gutterBottom style={{color:"#ff0000"}}>
+                    El formato del email es incorrecto.
+                  </Typography>
+
+              )}
                 <TextField
                   id="telefono"
                   label="Teléfono"
-                  defaultValue={telefono}
-                  type="number"
+                  defaultValue={alumno.telefono?alumno.telefono:0}
+                  type="numero"
                   onChange={(e) => {
                     setTelefono(e.target.value);
                   }}
                   {...register("telefono", {
                     required: true,
+                    valueAsNumber: true,
+                    validate: (value) => (value >= 0),
                   })}
-                  aria-invalid={errors.telefono ? "true" : "false"}
+                  aria-invalid={errors.telefono ? "true" : "false"}    
                 />
                 {errors.telefono && (
-                  <p role="alert">{errors.telefono?.message}</p>
+                   <ValidacionTexto msg={"Ingrese el número de teléfono: 11XXXXXXXX"}/>
                 )}
                 <BasicDatePicker
                   fecha={alumno.fechaDeNacimiento}

@@ -3,109 +3,7 @@ import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import EditIcon from "@mui/icons-material/Edit";
 import axios from 'axios';
-
-function MiDialog({ thisMateria, onModificar, anio, especialidad }) {
-    const {
-      register,
-      formState: { errors },
-      handleSubmit,
-      required,
-    } = useForm();
-    const [open, setOpen] = React.useState(false);
-    const [materia, setMateria] = React.useState(thisMateria);
-    const idMateria = thisMateria._id;
-  
-    const handleClose = () => {
-      setOpen(false);
-    };
-  
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-  
-    const handleClickGuardar = (data) => {
-      console.log(data);
-      onModificar(idMateria, data.materia);
-      setOpen(false);
-    };
-  
-    return (
-      <>
-        <IconButton
-          color="primary"
-          aria-label="edit"
-          component="label"
-          onClick={handleClickOpen}
-        >
-          <EditIcon />
-        </IconButton>
-  
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Editar materia:</DialogTitle>
-          <DialogContent>
-            <Box
-              component="form"
-              sx={{
-                "& .MuiTextField-root": { m: 1, width: "25ch" },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <div>
-                <TextField
-                  required
-                  id="materia"
-                  label="Materia"
-                  defaultValue={materia.materia}
-                  onChange={(e) => {
-                    setMateria(e.target.value);
-                  }}
-                  {...register("materia", {
-                    required: "Materia is required",
-                  })}
-                  aria-invalid={errors.materia ? "true" : "false"}
-                />
-              </div>
-              <div>
-                <TextField
-                  disabled
-                  id="anio"
-                  label="Año"
-                  defaultValue={anio}
-                  onChange={(e) => {
-                    setMateria(e.target.value);
-                  }}
-                />
-              </div>
-              <div>
-                <TextField
-                  disabled
-                  id="especialidad"
-                  label="Especialidad"
-                  defaultValue={especialidad}
-                  onChange={(e) => {
-                    setMateria(e.target.value);
-                  }}
-                />
-              </div>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button variant="contained" color="secondary" onClick={handleClose}>
-              Cancelar
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit(handleClickGuardar)}
-            >
-              Guardar
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </>
-    );
-  }
+import EditarMateria from '../Materias/EditarMateria';
 
 function MateriaCard() {
     const [open, setOpen] = React.useState(false);
@@ -250,7 +148,7 @@ function MateriaCard() {
                                   {a.especialidad.especialidad}
                                 </TableCell>
                                 <TableCell align="right">
-                                  <MiDialog
+                                  <EditarMateria
                                     thisMateria={m}
                                     onModificar={onModificar}
                                     anio={a.nombre}

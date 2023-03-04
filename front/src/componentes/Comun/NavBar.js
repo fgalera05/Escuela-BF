@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import { useNavigate } from 'react-router-dom';
+import { Container } from '@mui/system';
 
 export default function NavBar() {
     const navigate = useNavigate();
@@ -22,24 +23,20 @@ export default function NavBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" >
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <SchoolRoundedIcon />
-          </IconButton>
+      <AppBar position="static"  >
+      <Container maxWidth="xl">
+        <Toolbar  >
+         
+            <SchoolRoundedIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}/>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Escuela App
           </Typography>
           <Button variant="contained" color="secondary" onClick={handleVolver}>Home</Button>
           <Button variant="contained" color="secondary" onClick={handleLogOut}>Salir</Button>
         </Toolbar>
+        </Container>
       </AppBar>
+      
     </Box>
   );
 }

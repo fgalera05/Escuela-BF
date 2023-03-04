@@ -116,7 +116,9 @@ async function obtenerEgresados(req, res, next) {
     const alumnos = await Alumno.find()
       .populate("genero")
       .populate("curso")
-      .populate("anio");
+      .populate("anio")
+      .populate('especialidad');
+      
     const egresados = alumnos.filter((element) => element.anio.anio > 6);
       return res.status(200).json(egresados);
   
@@ -377,11 +379,20 @@ async function modificarAlumno(req, res, next) {
       .populate("anio")
       .populate("especialidad");
     console.log("alumno a actualizar", alumno);
+    
     if (!alumnoToUpdate) {
       logger.debug("Alumno not found");
       return res.status(404).send("Alumno not found");
     }
 
+    if (alumnoToUpdate.dni != alumno.dni){
+      const alumnoOtro = await Alumno.findOne({dni: alumno.dni})
+      if (alumnoOtro) {
+        logger.debug("El DNI ya existe!");
+        return res.status(500).send("El DNI ya existe!");
+      }
+    }
+    
     const existeGenero = await Genero.findById(alumno.genero);
     if (!existeGenero) {
       logger.debug("Género not found");
@@ -610,6 +621,9 @@ async function pasarDeAnioAlumno(req, res, next) {
     alumno.especialidad = (cursoProxAnio && !egresa)
       ? cursoProxAnio.anio.especialidad
       : alumno.especialidad;
+
+
+    console.log('especialdiadadadada',alumno.especialidad)
 
     await alumno.save();
 

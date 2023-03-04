@@ -1,4 +1,4 @@
-import NavBar from "./componentes/Comun/NavBar";
+import NavBar from "../componentes/Comun/NavBar";
 import Card from "@mui/material/Card";
 import {
   Alert,
@@ -39,12 +39,12 @@ import Paper from "@mui/material/Paper";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import EditIcon from "@mui/icons-material/Edit";
-import EgresadosCard from "./componentes/Dashboard/EgresadosCard";
-import CursoCard from "./componentes/Dashboard/CursoCard";
-import AlumnoCard from "./componentes/Dashboard/AlumnoCard";
-import EspecialidadCard from "./componentes/Dashboard/EspecialidadCard";
-import AnioCard from "./componentes/Dashboard/AnioCard";
-import MateriaCard from "./componentes/Dashboard/MateriaCard";
+import EgresadosCard from "../componentes/Dashboard/EgresadosCard";
+import CursoCard from "../componentes/Dashboard/CursoCard";
+import AlumnoCard from "../componentes/Dashboard/AlumnoCard";
+import EspecialidadCard from "../componentes/Dashboard/EspecialidadCard";
+import AnioCard from "../componentes/Dashboard/AnioCard";
+import MateriaCard from "../componentes/Dashboard/MateriaCard";
 
 export default function Dashboard() {
   const navigate = useNavigate();

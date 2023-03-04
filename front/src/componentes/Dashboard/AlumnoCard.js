@@ -31,17 +31,6 @@ function AlumnoCard() {
         }
       };
   
-    // const handleRegistrar = () => {
-    //   if (anios.length === 0) {
-    //     setMsg("No hay anios creados para inscribir alumnos");
-    //     setOpen(true);
-    //   } else if (cursos.length === 0) {
-    //     setMsg("No hay cursos creados para inscribir alumnos");
-    //     setOpen(true);
-    //   } else {
-    //     navigate("/registrar");
-    //   }
-    // };
   
     useEffect(() => {
       axios

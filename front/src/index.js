@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from './paginas/Dashboard';
 import Login from './paginas/Login'
 import Alumnos from './paginas/Alumnos'
 import RegistrarAlumno from './paginas/RegistrarAlumno'
@@ -16,6 +16,7 @@ import Cursos from './paginas/Cursos';
 import AlumnosCurso from './paginas/AlumnosCurso';
 import Calificaciones from './paginas/Calificaciones';
 import Egresados from './paginas/Egresados';
+import Dashboard from './paginas/Dashboard';
 
 const container = document.getElementById('root');
 const root = createRoot(container); 
@@ -23,7 +24,7 @@ const root = createRoot(container);
 root.render(<BrowserRouter>
   <Routes>
       <Route path="/" element={<Login />}/>
-      <Route path="dashboard" element={<App />} />
+      <Route path="dashboard" element={<Dashboard />} />
       <Route path="alumnos" element={<Alumnos />} />
       <Route path="egresados" element={<Egresados />} />
       <Route path="registrar" element={<RegistrarAlumno />} />
