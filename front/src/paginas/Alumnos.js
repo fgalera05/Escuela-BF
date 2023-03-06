@@ -80,7 +80,7 @@ function Alumnos() {
       console.log("Received values of form: ", id, nombre, fechaDeNacimiento);
 
       const newUser = await axios.patch(
-        "http://localhost:8000/alumnos/modificar/" + id,
+        process.env.REACT_APP_URL+"alumnos/modificar/" + id,
         {
           apellido: apellido.charAt(0).toUpperCase() + apellido.slice(1),
           nombre: nombre.charAt(0).toUpperCase() + nombre.slice(1),
@@ -97,37 +97,37 @@ function Alumnos() {
           },
         }
       );
+      console.log("newUser:", newUser.data)
+      const filtro = alumnos.filter(a => (a._id != newUser.data._id))
+      console.log("filtro", filtro);
+      setCopyList([newUser.data,...filtro])
 
-      // console.log("###", newUser);
-      // console.log("alumnos", alumnos);
-
-      // const alumnosOld = alumnos.filter(
-      //   (element) => element._id !== newUser.data._id
-      // );
-      // console.log("@@@@", [newUser.data, ...alumnosOld]);
-      // await setCopyList([newUser.data, ...alumnosOld]);
-      // console.log("copylist", copyList);
-
-      axios
-      .get("http://localhost:8000/alumnos", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        setAlumnos(response.data);
-        console.log("set",alumnos);
-        setCopyList(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  //     axios
+  //     .get(process.env.REACT_APP_URL+"alumnos", {
+  //       headers: {
+  //         Authorization: "Bearer " + token,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       setAlumnos(response.data);
+  //       console.log("set",alumnos);
+  //       setCopyList(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       if (error.response.status === 401){
+  //         navigate("/");
+  // }
+  //     });
       
       setError(false);
       setMsg("Cambios guardados!");
       setOpenAlert(true);
     } catch (err) {
       console.log(err);
+      if (err.response.status === 401){
+        navigate("/");
+}
       setCopyList(alumnos);
       setError(true);
       setMsg(
@@ -145,22 +145,26 @@ function Alumnos() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/alumnos", {
+      .get(process.env.REACT_APP_URL+"alumnos", {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((response) => {
+        console.log("Alumnos get:", response.data)
         setAlumnos(response.data);
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401){
+          navigate("/");
+        }
       });
   }, []);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/generos", {
+      .get(process.env.REACT_APP_URL+"generos", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -175,6 +179,9 @@ function Alumnos() {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401){
+          navigate("/");
+  }
       });
   }, []);
 

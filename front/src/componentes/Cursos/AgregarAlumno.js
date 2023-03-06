@@ -76,7 +76,7 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
         );
   
         const msg = await axios.post(
-          "http://localhost:8000/alumnos",
+          process.env.REACT_APP_URL+"alumnos",
           {
             apellido:
               data.apellido.charAt(0).toUpperCase() + data.apellido.slice(1),
@@ -101,6 +101,9 @@ function AgregarAlumno({ openAgregar, curso, lugar, generos }) {
         navigate("/curso/alumnos/" + curso._id);
       } catch (err) {
         console.log(err);
+        if (err.response.status === 401){
+          navigate("/");
+  }
         setMsg(err.response.data);
         setOpen(true);
       }

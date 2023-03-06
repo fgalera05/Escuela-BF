@@ -11,7 +11,6 @@ function BoletinHistoria({ calificaciones, actualizar }) {
       const filtro = calif.filter( c => (
         c._id !== data._id
       ))
-      console.log("DAAAAA",[data,...filtro]);
   
       setCalif([data,...filtro]);
       actualizar(true);

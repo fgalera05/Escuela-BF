@@ -3,15 +3,17 @@ import axios from 'axios';
 import React, { useEffect } from 'react'
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import BoletinHistoriaAlumno from './BoletinHistoriaAlumno';
+import { useNavigate } from 'react-router-dom';
 
-function Historial({ alumno, update }) {
+function Historial({ alumno}) {
     const token = localStorage.getItem("token");
     const [open, setOpen] = React.useState(false);
     const [historia, setHistoria] = React.useState([]);
-  
+    const navigate = useNavigate();
+
     useEffect(() => {
       axios
-        .get("http://localhost:8000/calificaciones/historial/" + alumno._id, {
+        .get(process.env.REACT_APP_URL+"calificaciones/historial/" + alumno._id, {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -19,10 +21,12 @@ function Historial({ alumno, update }) {
         .then((response) => {
           console.log("HISTORIAAAAA", response.data);
           setHistoria(response.data);
-          update(true);
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401){
+            navigate("/");
+    }
         });
     }, []);
     
@@ -31,10 +35,11 @@ function Historial({ alumno, update }) {
       setOpen(true);
       
     };
+
+
     const handleClose = () => {
-      try {
         axios
-        .get("http://localhost:8000/calificaciones/historial/" + alumno._id, {
+        .get(process.env.REACT_APP_URL+"calificaciones/historial/" + alumno._id, {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -42,17 +47,15 @@ function Historial({ alumno, update }) {
         .then((response) => {
           console.log("HISTORIAAAAA", response.data);
           setHistoria(response.data);
-          update(true);
           setOpen(false);
+          
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401){
+            navigate("/")
+    }
         });
-      } catch (error) {
-        
-      }
-      
-      // update(true);
     };
   
     return (

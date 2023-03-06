@@ -25,7 +25,7 @@ function Copyright(props) {
     >
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
-        FG
+        INSPT
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -58,7 +58,7 @@ export default function SignInSide() {
     const password = data.get("password");
 
     axios
-      .post("http://localhost:8000/login", {
+      .post(process.env.REACT_APP_URL+"login", {
         usuario: usuario,
         password: password,
       })
@@ -123,7 +123,7 @@ export default function SignInSide() {
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label="Usuario"
                 name="email"
                 autoComplete="email"
                 autoFocus
@@ -133,7 +133,7 @@ export default function SignInSide() {
                 required
                 fullWidth
                 name="password"
-                label="Password"
+                label="Contraseña"
                 type="password"
                 id="password"
                 autoComplete="current-password"

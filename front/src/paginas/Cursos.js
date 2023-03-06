@@ -33,7 +33,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Box, Container } from "@mui/system";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import AgregarAlumno from "../componentes/Cursos/AgregarAlumno";
 import VerCurso from "../componentes/Cursos/VerCurso";
 
@@ -45,10 +45,17 @@ function Cursos() {
   const [calificaciones, setCalificaciones] = useState([]);
   const token = localStorage.getItem("token");
   const [ver, setVer] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, []);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/cursos/", {
+      .get(process.env.REACT_APP_URL + "cursos/", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -59,12 +66,15 @@ function Cursos() {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/calificaciones/calificacion/curso/", {
+      .get(process.env.REACT_APP_URL + "calificaciones/calificacion/curso/", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -74,6 +84,9 @@ function Cursos() {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
@@ -116,10 +129,11 @@ function Row({ row, ver }) {
   const [disponible, setDisponible] = React.useState(false);
   const [generos, setGeneros] = React.useState([]);
   const [anotados, setAnotados] = React.useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/cursos/cantidad/" + row._id, {
+      .get(process.env.REACT_APP_URL + "cursos/cantidad/" + row._id, {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -130,12 +144,15 @@ function Row({ row, ver }) {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/generos/", {
+      .get(process.env.REACT_APP_URL + "generos/", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -145,6 +162,9 @@ function Row({ row, ver }) {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
@@ -152,11 +172,8 @@ function Row({ row, ver }) {
     parseInt(row.cantidadAlumnos) - parseInt(disponible)
       ? parseInt(row.cantidadAlumnos) - parseInt(disponible)
       : 0;
-  console.log(row.cantidadAlumnos);
   useEffect(() => {
-    setAnotados(
-      parseInt(row.cantidadAlumnos) - parseInt(disponible)
-    );
+    setAnotados(parseInt(row.cantidadAlumnos) - parseInt(disponible));
   }, []);
 
   return (

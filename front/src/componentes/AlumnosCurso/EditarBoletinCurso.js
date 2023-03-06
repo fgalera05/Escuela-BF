@@ -2,11 +2,11 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 import axios from 'axios';
 import React from 'react'
 import { useForm } from 'react-hook-form';
-import EditIcon from "@mui/icons-material/Edit";
-import ValidacionTexto from '../Comun/ValidacionTexto';
 import { useNavigate } from 'react-router-dom';
+import ValidacionTexto from '../Comun/ValidacionTexto';
+import EditIcon from "@mui/icons-material/Edit";
 
-function EditarBoletinHistoriaAlumno({ thisCalificacion, onModificar }) {
+function EditarBoletinCurso({ thisCalificacion, onModificar }) {
     const {
       register,
       formState: { errors },
@@ -14,8 +14,7 @@ function EditarBoletinHistoriaAlumno({ thisCalificacion, onModificar }) {
       required,
     } = useForm();
     const [open, setOpen] = React.useState(false);
-    const navigate = useNavigate();
-
+  
     const [calificacion, setCalificacion] = React.useState(thisCalificacion);
     const [id, setId] = React.useState(thisCalificacion._id);
     const [primer, setPrimer] = React.useState(
@@ -34,9 +33,8 @@ function EditarBoletinHistoriaAlumno({ thisCalificacion, onModificar }) {
     const [notaFinal, setNotaFinal] = React.useState(
       calificacion.notas.notaFinal
     );
-  
-    // console.log(calificacion);
-  
+    const navigate = useNavigate();
+
     const handleClose = () => {
       setOpen(false);
     };
@@ -73,7 +71,8 @@ function EditarBoletinHistoriaAlumno({ thisCalificacion, onModificar }) {
             },
           }
         );
-        onModificar(nueva.data)
+
+        onModificar(nueva.data);
       } catch (err) {
         console.log(err);
         if (err.response.status === 401){
@@ -175,7 +174,7 @@ function EditarBoletinHistoriaAlumno({ thisCalificacion, onModificar }) {
                   })}
                   aria-invalid={errors.tercer ? "true" : "false"}
                 />
-               {errors.tercer && (
+                {errors.tercer && (
                    <ValidacionTexto msg={"La nota deber ser mayor que 0 y menor a 10"}/>
                 )}
               </div>
@@ -254,4 +253,4 @@ function EditarBoletinHistoriaAlumno({ thisCalificacion, onModificar }) {
     );
   }
 
-export default EditarBoletinHistoriaAlumno
+export default EditarBoletinCurso

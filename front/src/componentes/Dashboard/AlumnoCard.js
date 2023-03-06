@@ -34,7 +34,7 @@ function AlumnoCard() {
   
     useEffect(() => {
       axios
-        .get("http://localhost:8000/anios/", {
+        .get(process.env.REACT_APP_URL+"anios/", {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -44,12 +44,15 @@ function AlumnoCard() {
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401){
+            navigate("/");
+    }
         });
     }, []);
   
     useEffect(() => {
       axios
-        .get("http://localhost:8000/alumnos/", {
+        .get(process.env.REACT_APP_URL+"alumnos/", {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -60,12 +63,15 @@ function AlumnoCard() {
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401){
+            navigate("/");
+    }
         });
     }, []);
   
     useEffect(() => {
       axios
-        .get("http://localhost:8000/cursos/", {
+        .get(process.env.REACT_APP_URL+"cursos/", {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -75,6 +81,9 @@ function AlumnoCard() {
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401){
+            navigate("/");
+    }
         });
     }, []);
   

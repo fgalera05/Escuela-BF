@@ -13,6 +13,7 @@ async function authJWT(req, res, next) {
             next()
         } catch (error) {
             logger.error('Firma token inválida!')
+            res.status(401).send('Firma token inválida!')
             next(error)
 
         }

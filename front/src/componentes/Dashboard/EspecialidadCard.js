@@ -26,14 +26,14 @@ import SchoolIcon from "@mui/icons-material/School";
 import { useForm } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
 import VerEspecialidades from "../Especialidad/VerEspecialidades";
-
+import { useNavigate } from "react-router-dom";
 
 
 function EspecialidadCard() {
   const [open, setOpen] = React.useState(false);
   const token = localStorage.getItem("token");
   const [especialidades, setEspecialidades] = React.useState([]);
-
+  const navigate = useNavigate();
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -43,18 +43,21 @@ function EspecialidadCard() {
   };
 
   useEffect(() => {
+    
     axios
-      .get("http://localhost:8000/especialidades/", {
+      .get(process.env.REACT_APP_URL+"especialidades/", {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((response) => {
-        console.log(response.data);
         setEspecialidades(response.data);
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
@@ -64,7 +67,7 @@ function EspecialidadCard() {
 
       await axios
         .patch(
-          "http://localhost:8000/especialidades/" + id,
+          process.env.REACT_APP_URL+"especialidades/" + id,
           {
             especialidad: especialidad,
           },
@@ -75,7 +78,6 @@ function EspecialidadCard() {
           }
         )
         .then((response) => {
-          console.log(response.data);
           const especialidadesCopy = especialidades.filter(
             (e) => e._id !== response.data._id
           );
@@ -83,6 +85,9 @@ function EspecialidadCard() {
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401) {
+            navigate("/");
+          }
         });
     } catch (err) {
       console.log(err);

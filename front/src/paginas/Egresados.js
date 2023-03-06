@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 import NavBar from "../componentes/Comun/NavBar";
 import Card from "@mui/material/Card";
@@ -46,9 +46,9 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import Historial from '../componentes/Egresados/Historial';
+import Historial from "../componentes/Egresados/Historial";
 
-function Boletin({ thisAlumno, thisCurso, onModificar, update}) {
+function Boletin({ thisAlumno, thisCurso, onModificar, update }) {
   const {
     register,
     formState: { errors },
@@ -83,7 +83,7 @@ function Boletin({ thisAlumno, thisCurso, onModificar, update}) {
 
   const token = localStorage.getItem("token");
   //   axios
-  //     .get("http://localhost:8000/cursos/"+curso._id,{
+  //     .get(process.env.REACT_APP_URL+"cursos/"+curso._id,{
   //       headers: {
   //         Authorization: "Bearer " + token,
   //       },
@@ -100,7 +100,8 @@ function Boletin({ thisAlumno, thisCurso, onModificar, update}) {
   useEffect(() => {
     axios
       .get(
-        "http://localhost:8000/calificaciones/calificacion/curso/" +
+        process.env.REACT_APP_URL +
+          "calificaciones/calificacion/curso/" +
           curso._id +
           "/" +
           alumno._id,
@@ -264,7 +265,7 @@ function MiDialogEditarBoletin({ thisCalificacion, onModificar }) {
       );
 
       const nueva = await axios.patch(
-        "http://localhost:8000/calificaciones/" + id,
+        process.env.REACT_APP_URL + "calificaciones/" + id,
         {
           primerCuatrimestre: data.primer,
           segundoCuatrimestre: data.segundo,
@@ -453,6 +454,12 @@ function Egresados() {
   const [copyList, setCopyList] = useState(alumnos);
   const [openAlert, setOpenAlert] = useState(false);
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, []);
+
   const requestSearch = (searched) => {
     setCopyList(alumnos.filter((a) => parseInt(a.dni) === parseInt(searched)));
   };
@@ -472,7 +479,7 @@ function Egresados() {
       console.log("Received values of form: ", id, nombre, fechaDeNacimiento);
 
       const newUser = await axios.patch(
-        "http://localhost:8000/alumnos/modificar/" + id,
+        process.env.REACT_APP_URL + "alumnos/modificar/" + id,
         {
           apellido: apellido.charAt(0).toUpperCase() + apellido.slice(1),
           nombre: nombre.charAt(0).toUpperCase() + nombre.slice(1),
@@ -495,39 +502,38 @@ function Egresados() {
       setAlumnos([newUser.data, ...alumnosOld]);
     } catch (err) {
       console.log(err);
+      if (err.response.status === 401) {
+        navigate("/");
+      }
     }
   };
 
   useEffect(() => {
-    if (!token) {
-      navigate("/");
-    }
-  }, []);
-
-  useEffect(() => {
     axios
-      .get("http://localhost:8000/alumnos/egresados", {
+      .get(process.env.REACT_APP_URL + "alumnos/egresados", {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((response) => {
         console.log(response.data);
-        if(response.data.length ==0){
-            setOpenAlert(true);
-        }else{
-            setAlumnos(response.data);
+        if (response.data.length == 0) {
+          setOpenAlert(true);
+        } else {
+          setAlumnos(response.data);
         }
-        
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/generos", {
+      .get(process.env.REACT_APP_URL + "generos", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -540,6 +546,9 @@ function Egresados() {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
@@ -552,23 +561,25 @@ function Egresados() {
   };
 
   const update = (data) => {
-
-    if(data){
+    if (data) {
       axios
-      .get("http://localhost:8000/alumnos/egresados", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        console.log("llego>", response.data);
-        setAlumnos(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        .get(process.env.REACT_APP_URL + "alumnos/egresados", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+          console.log("llego>", response.data);
+          setAlumnos(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+          if (error.response.status === 401) {
+            navigate("/");
+          }
+        });
     }
-  }
+  };
 
   return (
     <>
@@ -616,7 +627,11 @@ function Egresados() {
                       {alumno.previas == "0" ? " " : alumno.previas}
                     </TableCell>
                     <TableCell align="center">
-                      <Historial alumno={alumno} onModificar={onModificar} update={update}/>
+                      <Historial
+                        alumno={alumno}
+                        onModificar={onModificar}
+                        update={update}
+                      />
                     </TableCell>
                     <TableCell align="center">
                       <EditarAlumno
@@ -644,9 +659,5 @@ function Egresados() {
     </>
   );
 }
-
-
-
-
 
 export default Egresados;

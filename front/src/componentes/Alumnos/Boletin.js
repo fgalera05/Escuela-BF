@@ -5,8 +5,16 @@ import ArticleIcon from "@mui/icons-material/Article";
 import axios from 'axios';
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import EditarBoletin from './EditarBoletin';
+import { useNavigate } from 'react-router-dom';
 
 function Boletin({ thisAlumno, thisCurso, onModificar, update}) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, []);
+
     const {
       register,
       formState: { errors },
@@ -34,31 +42,16 @@ function Boletin({ thisAlumno, thisCurso, onModificar, update}) {
     };
   
     const handleClickGuardar = (data) => {
-      console.log(data);
       onModificar(alumno._id, apellido, nombre);
       setOpen(false);
     };
   
     const token = localStorage.getItem("token");
-
-    //     .get("http://localhost:8000/cursos/"+curso._id,{
-    //       headers: {
-    //         Authorization: "Bearer " + token,
-    //       },
-    //     })
-    //     .then((response) => {
-    //       console.log(response.data);
-    //       setMaterias(response.data.anio.materias);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // }, []);
   
     useEffect(() => {
       axios
         .get(
-          "http://localhost:8000/calificaciones/calificacion/curso/" +
+          process.env.REACT_APP_URL+"calificaciones/calificacion/curso/" +
             curso._id +
             "/" +
             alumno._id,
@@ -74,6 +67,9 @@ function Boletin({ thisAlumno, thisCurso, onModificar, update}) {
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401){
+            navigate("/");
+    }
         });
     }, []);
   

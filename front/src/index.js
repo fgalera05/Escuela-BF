@@ -1,10 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import './index.css';
-import App from './paginas/Dashboard';
 import Login from './paginas/Login'
 import Alumnos from './paginas/Alumnos'
-import RegistrarAlumno from './paginas/RegistrarAlumno'
 import { createRoot } from 'react-dom/client';
 
 import {
@@ -14,7 +11,6 @@ import {
 } from "react-router-dom";
 import Cursos from './paginas/Cursos';
 import AlumnosCurso from './paginas/AlumnosCurso';
-import Calificaciones from './paginas/Calificaciones';
 import Egresados from './paginas/Egresados';
 import Dashboard from './paginas/Dashboard';
 
@@ -27,7 +23,6 @@ root.render(<BrowserRouter>
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="alumnos" element={<Alumnos />} />
       <Route path="egresados" element={<Egresados />} />
-      <Route path="registrar" element={<RegistrarAlumno />} />
       <Route path="cursos" element={<Cursos />} />
       <Route path="/curso/alumnos/:curso" element={<AlumnosCurso />} />
   </Routes>

@@ -23,6 +23,7 @@ import React, { useEffect } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function RowAnio(props) {
   const { anio } = props;
@@ -76,20 +77,22 @@ function AnioCard() {
   const [open, setOpen] = React.useState(false);
   const token = localStorage.getItem("token");
   const [anios, setAnios] = React.useState([]);
-
+  const navigate = useNavigate();
   const handleClickOpen = async () => {
     await axios
-      .get("http://localhost:8000/anios/", {
+      .get(process.env.REACT_APP_URL + "anios/", {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((response) => {
-        console.log(response.data);
         setAnios(response.data);
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
     setOpen(true);
   };
@@ -100,7 +103,7 @@ function AnioCard() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/anios/", {
+      .get(process.env.REACT_APP_URL + "anios/", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -110,6 +113,9 @@ function AnioCard() {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 

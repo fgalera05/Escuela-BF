@@ -4,14 +4,13 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import EditarBoletinHistoriaAlumno from './EditarBoletinHistoriaAlumno';
 
 function BoletinHistoriaAlumno({calificaciones}) {
+
     const [calif, setCalif] = React.useState(calificaciones)
     const onModificarBoletinHistoria = (data) => {
      
       const filtro = calif.filter( c => (
         c._id !== data._id
       ))
-      console.log("DAAAAA",[data,...filtro]);
-  
       setCalif([data,...filtro])
     }
     

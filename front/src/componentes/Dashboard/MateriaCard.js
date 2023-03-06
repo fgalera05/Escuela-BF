@@ -4,16 +4,18 @@ import { useForm } from 'react-hook-form';
 import EditIcon from "@mui/icons-material/Edit";
 import axios from 'axios';
 import EditarMateria from '../Materias/EditarMateria';
+import { useNavigate } from 'react-router-dom';
 
 function MateriaCard() {
     const [open, setOpen] = React.useState(false);
     const token = localStorage.getItem("token");
     const [anios, setAnios] = React.useState([]);
     const [copyList, setCopyList] = React.useState(anios);
-  
+    const navigate = useNavigate();
+
     const handleClickOpen = async () => {
       await axios
-      .get("http://localhost:8000/anios/", {
+      .get(process.env.REACT_APP_URL+"anios/", {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -25,6 +27,9 @@ function MateriaCard() {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401){
+          navigate("/");
+  }
       });
       setOpen(true);
     };
@@ -35,7 +40,7 @@ function MateriaCard() {
   
     useEffect(() => {
       axios
-        .get("http://localhost:8000/anios/", {
+        .get(process.env.REACT_APP_URL+"anios/", {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -47,6 +52,9 @@ function MateriaCard() {
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401){
+            navigate("/");
+    }
         });
     }, []);
   
@@ -68,7 +76,7 @@ function MateriaCard() {
         console.log("Received values of form: ", id, materia);
   
         await axios.patch(
-          "http://localhost:8000/materias/" + id,
+          process.env.REACT_APP_URL+"materias/" + id,
           {
             materia: materia,
           },
@@ -80,7 +88,7 @@ function MateriaCard() {
         );
   
         await axios
-          .get("http://localhost:8000/anios/", {
+          .get(process.env.REACT_APP_URL+"anios/", {
             headers: {
               Authorization: "Bearer " + token,
             },
@@ -92,9 +100,15 @@ function MateriaCard() {
           })
           .catch((error) => {
             console.log(error);
+            if (error.response.status === 401) {
+              navigate("/");
+            }
           });
       } catch (err) {
         console.log(err);
+        if (err.response.status === 401){
+          navigate("/");
+  }
       }
     };
   

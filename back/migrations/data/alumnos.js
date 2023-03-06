@@ -95,14 +95,34 @@ const alumno6 = {
     tercero: true,
     cuarto:true,
     quinto:true,
-    sexto: true,
+    sexto: true, 
+}
+
+const alumno6b = {
+    _id: mongoose.Types.ObjectId("100000000000000000000274"),
+    alumno:{
+        apellido: "Perez",
+    nombre: "Ratont",
+    },
     
+    dni: 28681508,
+    genero: mongoose.Types.ObjectId('000000000000000000000005'),
+    especialidad: mongoose.Types.ObjectId('000000000000000000000001'),
+    curso: mongoose.Types.ObjectId('000000000000000000000131'),
+    //: mongoose.Types.ObjectId('000000000000000000000118')
+    primero: true,
+    segundo:true,
+    tercero: true,
+    cuarto:true,
+    quinto:true,
+    sexto: true, 
 }
 
 exports.alumno1 = alumno1
 exports.alumno2 = alumno2
 exports.alumno3 = alumno3
-// exports.alumno3b = alumno3b
-// exports.alumno4 = alumno4
-// exports.alumno5 = alumno5
+exports.alumno3b = alumno3b
+exports.alumno4 = alumno4
+exports.alumno5 = alumno5
 exports.alumno6 = alumno6
+exports.alumno6b = alumno6b

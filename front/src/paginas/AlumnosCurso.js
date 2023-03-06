@@ -35,6 +35,12 @@ function AlumnosCurso() {
   const [miCurso, setMiCurso] = React.useState("");
   const [openPasa, setOpenPasa] = React.useState(false);
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, []);
+
   const handleClick = () => {
     navigate("/cursos");
   };
@@ -60,7 +66,7 @@ function AlumnosCurso() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/cursos/alumnos/" + curso, {
+      .get(process.env.REACT_APP_URL + "cursos/alumnos/" + curso, {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -75,12 +81,15 @@ function AlumnosCurso() {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/cursos/" + curso, {
+      .get(process.env.REACT_APP_URL + "cursos/" + curso, {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -90,6 +99,9 @@ function AlumnosCurso() {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          navigate("/");
+        }
       });
   }, []);
 
@@ -111,10 +123,16 @@ function AlumnosCurso() {
     setOpenCalif(true);
   };
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, []);
+
   const onModificarResumen = async (data) => {
     if (data) {
       await axios
-        .get("http://localhost:8000/cursos/alumnos/" + curso, {
+        .get(process.env.REACT_APP_URL + "cursos/alumnos/" + curso, {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -129,17 +147,18 @@ function AlumnosCurso() {
         })
         .catch((error) => {
           console.log(error);
+          if (error.response.status === 401) {
+            navigate("/");
+          }
         });
     }
   };
 
   const pasarDeAnio = (id) => {
-    const alumnosRestantes = alumnos.filter(a=> (
-      a[1]._id != id
-    ))
-    setAlumnos(alumnosRestantes)
-    setOpenPasa(true)
-  }
+    const alumnosRestantes = alumnos.filter((a) => a[1]._id != id);
+    setAlumnos(alumnosRestantes);
+    setOpenPasa(true);
+  };
 
   return (
     <>
@@ -197,7 +216,11 @@ function AlumnosCurso() {
                     />
                   </TableCell>
                   <TableCell>
-                    <PasarDeAnio alumno={a} course={curso} pasarDeAnio={pasarDeAnio}/>
+                    <PasarDeAnio
+                      alumno={a}
+                      course={curso}
+                      pasarDeAnio={pasarDeAnio}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
@@ -214,18 +237,17 @@ function AlumnosCurso() {
         <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
           El curso no tiene alumnos!
         </Alert>
-        </Snackbar>
-        <Snackbar
+      </Snackbar>
+      <Snackbar
         open={openPasa}
         autoHideDuration={3000}
         onClose={handleClose}
         message="Note archived"
       >
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%"}}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
           El alumno se asignó correctamente!
         </Alert>
       </Snackbar>
-      
     </>
   );
 }
